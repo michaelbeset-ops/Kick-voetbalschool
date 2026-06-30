@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KICK App | Ouder & Admin Portaal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{min-height:100vh;background:#FAFAFA;}
+  .kapp,.kapp *{font-family:Inter,system-ui,sans-serif;}
+  .kapp button{font-family:inherit;cursor:pointer;}
+  .kapp input,.kapp textarea,.kapp select{font-family:inherit;}
+  .kapp ::-webkit-scrollbar{width:10px;height:10px;}
+  .kapp ::-webkit-scrollbar-thumb{background:#c9cec9;border-radius:8px;}
+  .kapp ::-webkit-scrollbar-track{background:transparent;}
+  @keyframes kspin{to{transform:rotate(360deg);}}
+  @keyframes kslide{from{transform:translateX(40px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  @keyframes kfade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes kpop{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:none;}}
+  @keyframes kconf{to{transform:translateY(110vh) rotate(640deg);}}
+  @keyframes kbar{from{width:0;}}
+  .kadm-shell{display:flex;min-height:100vh;background:#FAFAFA;}
+  .kadm-side{width:246px;flex:none;background:#0A0A0A;color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+  .kadm-main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+  .kadm-content{flex:1;overflow:auto;}
+  .kadm-nav{display:flex;flex-direction:column;}
+  @media(max-width:960px){
+    .kadm-shell{flex-direction:column;}
+    .kadm-side{width:100%;height:auto;position:sticky;top:0;z-index:30;}
+    .kadm-nav{flex-direction:row;overflow-x:auto;}
+    .kadm-navlabel{display:none;}
+    .kadm-main{height:auto;overflow:visible;}
+    .kadm-content{overflow:visible;}
+    .kadm-brandsub{display:none;}
+  }
+  .kpar-shell{display:flex;min-height:100vh;background:#F1F4F1;}
+  .kpar-side{width:236px;flex:none;background:#fff;border-right:1px solid #E7E9E7;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;z-index:20;}
+  .kpar-main{flex:1;min-width:0;}
+  .kpar-nav{display:flex;flex-direction:column;gap:4px;}
+  @media(max-width:820px){
+    .kpar-side{position:fixed;bottom:0;left:0;right:0;top:auto;width:auto;height:auto;flex-direction:row;border-right:none;border-top:1px solid #E7E9E7;box-shadow:0 -6px 20px rgba(0,0,0,.06);}
+    .kpar-sidehead{display:none;}
+    .kpar-nav{flex-direction:row;gap:0;justify-content:space-around;width:100%;}
+    .kpar-navtext{font-size:10px;}
+    .kpar-pad{padding-bottom:84px;}
+  }
+  .ksplit{display:grid;grid-template-columns:min(54%,580px) 1fr;min-height:100vh;}
+  @media(max-width:840px){.ksplit{grid-template-columns:1fr;}.ksplit-visual{display:none;}}
+  .kgrid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media(max-width:1100px){.kgrid-kpi{grid-template-columns:repeat(2,1fr);}}
+  .kgrid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;}
+  @media(max-width:900px){.kgrid-2{grid-template-columns:1fr;}}
+  .kgrid-childs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+  .kgrid-prog{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .khide-sm{display:table-cell;}
+  @media(max-width:760px){.khide-sm{display:none;}}
+  .kgroep-grid{display:grid;grid-template-columns:minmax(220px,1fr) 2.4fr;gap:16px;align-items:start;}
+  @media(max-width:700px){.kgroep-grid{grid-template-columns:1fr;}}
+  @media(max-width:600px){
+    .kapp input,.kapp select,.kapp textarea{font-size:16px!important;}
+  }
+  .kapp [data-chip]{touch-action:none;}
+  .kapp [data-chip].kchip-picked{outline:2px solid #0B6E2C;outline-offset:1px;box-shadow:0 4px 14px rgba(11,110,44,.35)!important;}
+  .kapp [data-dropzone].kzone-target{outline:2px dashed #0B6E2C;outline-offset:2px;background:#F3FAF4!important;}
+</style>
+</head>
+<body>
+<div id="root" class="kapp" style="position:relative;min-height:100vh;"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script>
+const LOGO="data:image/png;base64,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";
+</script>
+<script>
+class KickApp extends React.Component {
+  c = { green:'#0B6E2C', greenD:'#14532D', ink:'#0A0A0A', lime:'#B4FF39', paper:'#FAFAFA',
+        line:'#E7E9E7', sub:'#6B726B', text:'#191C19', amber:'#E0A106', blue:'#2A6FDB',
+        purple:'#7C3AED', red:'#D14343', ok:'#0B8A3D' };
+
+  avPal = ['#0B6E2C','#2A6FDB','#7C3AED','#E0A106','#D14343','#0E7490','#BE185D','#4D7C0F'];
+
+  db = {
+    locations:{
+      verburch:{name:'VV Verburch', addr:'Arckelweg 20, Poeldijk', color:'#0B6E2C'},
+      loosduinen:{name:'SV Loosduinen', addr:'Madesteinweg 17, Den Haag', color:'#2A6FDB'}
+    },
+    trainers:{
+      t1:{name:'Roy de Geus', role:'Hoofdtrainer'},
+      t2:{name:'Wesley Bron', role:'Techniektrainer'},
+      t3:{name:'Daan Kessler', role:'Keeperstrainer'},
+      t4:{name:'Imran Yıldız', role:'Athletiektrainer'},
+      t5:{name:'Femke Stam', role:'Talentcoach'}
+    },
+    programs:{
+      p1:{name:'10-weekse Techniekcursus · Najaar 2026', short:'Techniekcursus', priceNew:145, priceMember:120, cap:15, color:'#0B6E2C', period:'21 sep – 23 nov 2026', schema:'Wekelijks · ma/di/wo/do', loc:'VV Verburch & SV Loosduinen', status:'Open'},
+      p2:{name:'Kick Soccer Camp · Kerstvakantie 2026', short:'Soccer Camp', priceNew:89, priceMember:89, cap:40, color:'#E0A106', period:'22 – 23 dec 2026', schema:'2 dagen · 10:00–15:00', loc:'VV Verburch', status:'Open'},
+      p3:{name:'Train-als-een-prof Dag', short:'Train als prof', priceNew:45, priceMember:45, cap:24, color:'#7C3AED', period:'Op aanvraag', schema:'Losse dag · 10:00–14:00', loc:'VV Verburch', status:'Open'},
+      p4:{name:'Privé- & duotraining', short:'Privé & duo', priceNew:60, priceMember:60, cap:2, color:'#2A6FDB', period:'Doorlopend', schema:'In overleg', loc:'VV Verburch', status:'Wachtlijst'}
+    },
+    players:[
+      {id:'pl1',name:'Lars de Vries',age:9,club:'VV Verburch',size:'140',parent:'par1',course:'p1',att:92,pay:'paid'},
+      {id:'pl2',name:'Jasmijn Visser',age:6,club:'VV Verburch',size:'116',parent:'par1',course:'p1',att:88,pay:'paid'},
+      {id:'pl3',name:'Sem de Vries',age:11,club:'ADO Den Haag jeugd',size:'152',parent:'par1',course:'p3',att:80,pay:'open'},
+      {id:'pl4',name:'Yusuf El Amrani',age:11,club:'ADO Den Haag jeugd',size:'152',parent:'par2',course:'p1',att:96,pay:'paid'},
+      {id:'pl5',name:'Lieke Bakker',age:7,club:'SV Loosduinen',size:'128',parent:'par3',course:'p1',att:73,pay:'overdue'},
+      {id:'pl6',name:'Mees Janssen',age:12,club:'RKSV GDA',size:'164',parent:'par4',course:'p3',att:84,pay:'paid'},
+      {id:'pl7',name:'Aiden Brouwer',age:8,club:'Quick Boys',size:'134',parent:'par5',course:'p1',att:67,pay:'open'},
+      {id:'pl8',name:'Sara van den Berg',age:10,club:'Westlandia',size:'140',parent:'par6',course:'p2',att:90,pay:'paid'},
+      {id:'pl9',name:'Noah Achterberg',age:13,club:'HBS',size:'170',parent:'par7',course:'p3',att:78,pay:'paid'},
+      {id:'pl10',name:'Tess Koster',age:10,club:'ADO Den Haag jeugd',size:'140',parent:'par8',course:'p1',att:85,pay:'open'},
+      {id:'pl11',name:'Daan Mulder',age:12,club:'SV Loosduinen',size:'164',parent:'par9',course:'p2',att:91,pay:'paid'},
+      {id:'pl12',name:'Fleur Hofman',age:8,club:'VV Verburch',size:'134',parent:'par10',course:'p1',att:70,pay:'paid'},
+      {id:'pl13',name:'Bram de Wit',age:9,club:'Quick Boys',size:'140',parent:'par11',course:'p1',att:82,pay:'paid'},
+      {id:'pl14',name:'Lina Demir',age:7,club:'VV Verburch',size:'128',parent:'par12',course:'p1',att:64,pay:'overdue'},
+      {id:'pl15',name:'Tycho Smit',age:13,club:'Westlandia',size:'170',parent:'par13',course:'p3',att:88,pay:'paid'},
+      {id:'pl16',name:'Roos Peters',age:11,club:'HBS',size:'152',parent:'par14',course:'p2',att:79,pay:'open'}
+    ],
+    parentMain:{id:'par1',name:'Sandra de Vries',email:'sandra.devries@email.nl',phone:'06 1234 5678',kids:['pl1','pl2','pl3'],since:'2024'},
+    trainings:[
+      {id:'tr1',day:0,start:17,dur:1,prog:'p1',loc:'verburch',tr:'t2',ids:['pl2','pl5','pl7','pl12','pl14','pl13']},
+      {id:'tr2',day:0,start:18,dur:1,prog:'p1',loc:'verburch',tr:'t1',ids:['pl1','pl4','pl10','pl13']},
+      {id:'tr3',day:1,start:17,dur:1,prog:'p1',loc:'loosduinen',tr:'t3',ids:['pl5','pl7','pl12']},
+      {id:'tr4',day:2,start:18,dur:1,prog:'p1',loc:'verburch',tr:'t2',ids:['pl1','pl4','pl6','pl10','pl11','pl15','pl16','pl9','pl13','pl12','pl5','pl7','pl14','pl2']},
+      {id:'tr5',day:2,start:19,dur:1,prog:'p3',loc:'verburch',tr:'t1',ids:['pl3','pl6','pl9','pl15']},
+      {id:'tr6',day:3,start:17,dur:1,prog:'p1',loc:'loosduinen',tr:'t4',ids:['pl5','pl14','pl12','pl7']},
+      {id:'tr7',day:4,start:18,dur:1,prog:'p4',loc:'verburch',tr:'t1',ids:['pl4','pl11']},
+      {id:'tr8',day:6,start:10,dur:2,prog:'p3',loc:'verburch',tr:'t1',ids:['pl3','pl6','pl9','pl15','pl16','pl1','pl4']},
+      {id:'tr9',day:6,start:13,dur:2,prog:'p2',loc:'verburch',tr:'t5',ids:['pl8','pl11','pl16','pl6','pl9']}
+    ],
+    feed:[
+      {pl:'Lars de Vries',prog:'Techniekcursus',when:'12 min',st:'Betaald'},
+      {pl:'Roos Peters',prog:'Soccer Camp',when:'1 uur',st:'Wachtlijst'},
+      {pl:'Bram de Wit',prog:'Techniekcursus',when:'3 uur',st:'Betaald'},
+      {pl:'Tess Koster',prog:'Techniekcursus',when:'5 uur',st:'Open'},
+      {pl:'Mees Janssen',prog:'Train-als-een-prof',when:'gisteren',st:'Betaald'},
+      {pl:'Lina Demir',prog:'Techniekcursus',when:'gisteren',st:'Open'},
+      {pl:'Daan Mulder',prog:'Soccer Camp',when:'2 dagen',st:'Betaald'},
+      {pl:'Sara van den Berg',prog:'Soccer Camp',when:'2 dagen',st:'Betaald'}
+    ],
+    invoices:[
+      {id:'F-2026-0188',pl:'Lars de Vries',prog:'Techniekcursus Najaar 2026',amount:120,status:'Betaald',date:'14 sep 2026',method:'iDEAL'},
+      {id:'F-2026-0189',pl:'Jasmijn Visser',prog:'Techniekcursus Najaar 2026',amount:120,status:'Betaald',date:'14 sep 2026',method:'iDEAL'},
+      {id:'F-2026-0204',pl:'Sem de Vries',prog:'Train-als-een-prof Dag',amount:45,status:'Open',date:'2 okt 2026',method:'iDEAL'},
+      {id:'F-2026-0151',pl:'Lieke Bakker',prog:'Techniekcursus Najaar 2026',amount:145,status:'Verlopen',date:'30 aug 2026',method:'iDEAL'},
+      {id:'F-2026-0210',pl:'Tess Koster',prog:'Techniekcursus Najaar 2026',amount:145,status:'Open',date:'4 okt 2026',method:'iDEAL'},
+      {id:'F-2026-0166',pl:'Yusuf El Amrani',prog:'Techniekcursus Najaar 2026',amount:120,status:'Betaald',date:'5 sep 2026',method:'iDEAL'}
+    ],
+    messages:[
+      {id:'m1',subj:'Bevestiging inschrijving — Lars',prev:'Je inschrijving voor de 10-weekse Techniekcursus is bevestigd. Tot maandag!',when:'Vandaag 09:12',unread:true,tag:'Bevestiging'},
+      {id:'m2',subj:'Herinnering: training morgen',prev:'Lars traint morgen om 18:00 op VV Verburch bij Roy de Geus.',when:'Gisteren 17:40',unread:true,tag:'Herinnering'},
+      {id:'m3',subj:'Training afgelast (weer)',prev:'De training van woensdag op SV Loosduinen gaat niet door i.v.m. onweer.',when:'2 dagen',unread:false,tag:'Afgelast'},
+      {id:'m4',subj:'Certificaat klaar — Jasmijn',prev:'Het certificaat van de vorige cursus staat klaar om te downloaden.',when:'4 dagen',unread:false,tag:'Certificaat'}
+    ],
+    revenue:[{m:'mrt',v:4200},{m:'apr',v:5100},{m:'mei',v:4800},{m:'jun',v:6300},{m:'jul',v:3900},{m:'aug',v:7200},{m:'sep',v:8600},{m:'okt',v:7400}]
+  };
+
+  state = {
+    hash: (typeof location!=='undefined'?location.hash:''),
+    adminView:'dashboard', parentView:'overzicht',
+    selTraining:null, attendance:{},
+    selPlayer:null, modal:null, toast:null, search:'',
+    invStatusFilter:'Alle',
+    trFilters:{loc:'all',prog:'all',tr:'all',notFull:false}, trMode:'week',
+    pool:['pl7','pl10','pl11','pl16','pl6','pl8'],
+    groups:[
+      {id:'g1',name:'Beginners 5–7 · ma 17u Verburch',trainer:'Wesley Bron',cap:12,ids:['pl2','pl5','pl14']},
+      {id:'g2',name:'Gevorderd 8–10 · wo 18u Verburch',trainer:'Roy de Geus',cap:15,ids:['pl1','pl12','pl13']},
+      {id:'g3',name:'Talent 11–14 · zo 10u Verburch',trainer:'Femke Stam',cap:16,ids:['pl4','pl9','pl15']}
+    ],
+    dragId:null,
+    composer:{audience:'Alle ouders (87)',template:'',subj:'',body:''},
+    enroll:{step:1,program:null,slot:null,child:null,newChild:false,newName:'',size:'',allergies:'',goals:'',member:true,paying:false,bank:false,done:false}
+  };
+
+  componentDidMount(){
+    this._onHash = ()=> this.setState({hash:location.hash});
+    window.addEventListener('hashchange', this._onHash);
+    this.syncScroll();
+  }
+  componentDidUpdate(){ this.syncScroll(); }
+  componentWillUnmount(){ window.removeEventListener('hashchange', this._onHash); document.body.style.overflow=''; }
+  syncScroll(){ const r=this.parse(); document.body.style.overflow = r.app ? 'hidden' : ''; }
+
+  parse(){
+    const hsh = this.state.hash || (typeof location!=='undefined'?location.hash:'') || '';
+    if(hsh.indexOf('#/app')===0){
+      const seg=(hsh.replace('#/app','').replace(/^\//,'').split('/')[0])||'inloggen';
+      return {app:true, role:seg};
+    }
+    return {app:false};
+  }
+  go(h){ location.hash=h; this.setState({hash:h}); }
+  setToast(t){ this.setState({toast:t}); clearTimeout(this._tt); this._tt=setTimeout(()=>this.setState({toast:null}),2600); }
+
+  // ---------- tiny helpers ----------
+  E(tag,props,...kids){ return React.createElement(tag,props,...kids); }
+  D(style,...kids){ return React.createElement('div',{style},...kids); }
+  prog(id){ return this.db.programs[id]; }
+  loc(id){ return this.db.locations[id]; }
+  trn(id){ return this.db.trainers[id]; }
+  player(id){ return this.db.players.find(p=>p.id===id); }
+  acolor(name){ let s=0; for(let i=0;i<name.length;i++) s+=name.charCodeAt(i); return this.avPal[s%this.avPal.length]; }
+
+  av(name,size,col){
+    size=size||36; const init=(name||'?').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    return this.E('div',{style:{width:size,height:size,borderRadius:'50%',flex:'none',background:col||this.acolor(name),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:size*0.36,letterSpacing:'.3px'}}, init);
+  }
+  bar(used,cap,h,col){
+    const pct=Math.min(100,Math.round(used/cap*100)); const c=this.c;
+    const color = col || (pct>=95?c.red:pct>=80?c.amber:c.green);
+    return this.D({background:'#E9ECE9',borderRadius:20,height:h||8,overflow:'hidden',width:'100%'},
+      this.D({width:pct+'%',height:'100%',background:color,borderRadius:20,animation:'kbar .7s ease'}));
+  }
+  pill(text,bg,fg){ return this.E('span',{style:{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:20,fontSize:11.5,fontWeight:700,background:bg,color:fg,whiteSpace:'nowrap'}},text); }
+  payPill(s){ const c=this.c; if(s==='paid'||s==='Betaald') return this.pill('Betaald','#E4F4E9',c.ok); if(s==='overdue'||s==='Verlopen') return this.pill('Verlopen','#FBE7E7',c.red); return this.pill('Open','#FBF1DC','#9A6B00'); }
+  btn(label,onClick,kind,extra){
+    const c=this.c; const base={display:'inline-flex',alignItems:'center',justifyContent:'center',gap:8,border:'none',borderRadius:9,fontWeight:700,fontSize:13.5,padding:'11px 18px',transition:'filter .15s,transform .15s,background .15s',whiteSpace:'nowrap'};
+    const kinds={
+      lime:{background:c.lime,color:c.ink}, green:{background:c.green,color:'#fff'}, dark:{background:c.ink,color:'#fff'},
+      ghost:{background:'#fff',color:c.text,border:'1px solid '+c.line}, ghostd:{background:'transparent',color:'#fff',border:'1px solid rgba(255,255,255,.25)'},
+      subtle:{background:'#EEF1EE',color:c.text}, danger:{background:'#FBE7E7',color:c.red}
+    };
+    return this.E('button',{onClick,style:Object.assign({},base,kinds[kind||'green'],extra||{}),onMouseEnter:e=>e.currentTarget.style.filter='brightness(.95)',onMouseLeave:e=>e.currentTarget.style.filter='none'},label);
+  }
+  ic(name,size){
+    const h=React.createElement; size=size||18;
+    const p=(d)=>h('path',{d,fill:'none',stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round'});
+    const cir=(cx,cy,r)=>h('circle',{cx,cy,r,fill:'none',stroke:'currentColor',strokeWidth:1.8});
+    const w=(...k)=>h('svg',{width:size,height:size,viewBox:'0 0 24 24'},...k);
+    switch(name){
+      case 'dashboard': return w(p('M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z'));
+      case 'trainingen': return w(p('M4 5h16v15H4zM4 9h16M9 3v4M15 3v4'));
+      case 'inschrijvingen': return w(p('M8 4h8v3H8zM6 5h12v15H6zM9 12h6M9 16h4'));
+      case 'spelers': return w(p('M16 19a4 4 0 0 0-8 0'),cir(12,8,3),p('M20 19a3 3 0 0 0-3.5-3M4 19a3 3 0 0 1 3.5-3'));
+      case 'groepen': return w(p('M12 3l8 4-8 4-8-4zM4 11l8 4 8-4M4 16l8 4 8-4'));
+      case 'cursussen': return w(p('M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 11h18'));
+      case 'financieel': return w(p('M4 20V10M9 20V5M14 20v-8M19 20v-12'));
+      case 'communicatie': return w(p('M4 5h16v12H7l-3 3zM8 10h8M8 13h5'));
+      case 'instellingen': return w(cir(12,12,3),p('M12 3v2M12 19v2M4.5 4.5l1.5 1.5M18 18l1.5 1.5M3 12h2M19 12h2M4.5 19.5L6 18M18 6l1.5-1.5'));
+      case 'overzicht': return w(p('M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-4H4z'));
+      case 'inschrijven': return w(cir(12,12,9),p('M12 8v8M8 12h8'));
+      case 'kinderen': return w(cir(12,8,3),p('M16 19a4 4 0 0 0-8 0'));
+      case 'betalingen': return w(p('M3 6h18v12H3zM3 10h18M7 15h4'));
+      case 'berichten': return w(p('M4 5h16v12H7l-3 3zM8 10h8'));
+      case 'back': return w(p('M15 5l-7 7 7 7'));
+      case 'switch': return w(p('M7 7h11l-3-3M17 17H6l3 3'));
+      case 'search': return w(cir(11,11,7),p('M21 21l-4-4'));
+      case 'close': return w(p('M6 6l12 12M18 6L6 18'));
+      case 'check': return w(p('M5 12l5 5 9-11'));
+      case 'pin': return w(p('M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z'),cir(12,10,2.4));
+      case 'clock': return w(cir(12,12,8),p('M12 8v4l3 2'));
+      case 'bell': return w(p('M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20a2 2 0 0 0 4 0'));
+      case 'plus': return w(p('M12 5v14M5 12h14'));
+      case 'cal': return w(p('M5 6h14v13H5zM5 10h14M9 4v3M15 4v3'));
+      case 'doc': return w(p('M7 3h7l4 4v14H7zM14 3v4h4'));
+      default: return w(cir(12,12,3));
+    }
+  }
+
+  // ===================================================================
+  renderApp(){
+    const r=this.parse();
+    if(!r.app) return null;
+    let body;
+    if(r.role==='admin') body=this.shellAdmin();
+    else if(r.role==='ouder') body=this.shellParent();
+    else body=this.login();
+    return this.D({position:'fixed',inset:0,zIndex:1000,background:this.c.paper,overflow:'auto',animation:'kfade .3s ease'},
+      body, this.renderToast());
+  }
+  renderToast(){
+    if(!this.state.toast) return null;
+    return this.D({position:'fixed',left:'50%',bottom:26,transform:'translateX(-50%)',zIndex:4000,background:this.c.ink,color:'#fff',padding:'12px 20px',borderRadius:10,fontSize:13.5,fontWeight:600,boxShadow:'0 12px 30px rgba(0,0,0,.25)',animation:'kfade .25s ease',display:'flex',gap:9,alignItems:'center'},
+      this.E('span',{style:{color:this.c.lime,display:'flex'}},this.ic('check',16)), this.state.toast);
+  }
+
+  // ----------------------------- LOGIN -----------------------------
+  login(){
+    const c=this.c;
+    const logo=this.E('img',{src:LOGO,alt:'KICK',style:{height:34,cursor:'pointer'},onClick:()=>this.go('#/')});
+    const field=(label,type,ph)=> this.D({display:'flex',flexDirection:'column',gap:7},
+      this.E('label',{style:{fontSize:12.5,fontWeight:700,color:c.text,letterSpacing:'.2px'}},label),
+      this.E('input',{type,placeholder:ph,style:{padding:'13px 14px',border:'1px solid '+c.line,borderRadius:10,fontSize:14,outline:'none',background:'#fff'},onFocus:e=>e.target.style.borderColor=c.green,onBlur:e=>e.target.style.borderColor=c.line}));
+    const visual=this.E('div',{className:'ksplit-visual',style:{position:'relative',overflow:'hidden',background:c.greenD}},
+      this.E('img',{src:'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1400&auto=format&fit=crop',alt:'',style:{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',opacity:.5}}),
+      this.D({position:'absolute',inset:0,background:'linear-gradient(140deg, rgba(11,110,44,.86), rgba(10,10,10,.82))'}),
+      this.D({position:'relative',zIndex:2,height:'100%',display:'flex',flexDirection:'column',justifyContent:'space-between',padding:'40px'},
+        logo,
+        this.D({},
+          this.E('div',{style:{display:'inline-flex',alignItems:'center',gap:8,marginBottom:18}}, this.D({width:26,height:2,background:c.lime}), this.E('span',{style:{color:c.lime,fontFamily:'Oswald',letterSpacing:'3px',fontSize:12,fontWeight:600,textTransform:'uppercase'}},'Team Kick Portaal')),
+          this.E('h1',{style:{margin:0,fontFamily:'Anton',fontWeight:400,fontSize:'clamp(34px,4vw,54px)',lineHeight:.98,textTransform:'uppercase',color:'#fff'}},'Welkom terug bij Team Kick'),
+          this.E('p',{style:{margin:'16px 0 0',color:'rgba(255,255,255,.8)',fontSize:15.5,lineHeight:1.6,maxWidth:'42ch'}},'Beheer inschrijvingen, trainingen en betalingen op één plek. Rust en overzicht voor de hele voetbalschool.')),
+        this.D({display:'flex',gap:22,color:'rgba(255,255,255,.75)',fontSize:13},
+          this.E('span',null,'87 actieve spelers'), this.E('span',null,'2 locaties'), this.E('span',null,'100% BVO-trainers'))));
+
+    const demo=this.D({marginTop:30,padding:'18px',border:'1px dashed '+c.green,borderRadius:12,background:'#F3FAF4'},
+      this.D({display:'flex',alignItems:'center',gap:8,marginBottom:12},
+        this.pill('DEMO',c.green,'#fff'),
+        this.E('span',{style:{fontSize:13,fontWeight:700,color:c.text}},'Log direct in als — voor de pitch')),
+      this.D({display:'flex',gap:10},
+        this.btn('Ouder','x',null,{flex:1,background:'#fff',color:c.green,border:'1px solid '+c.green}),
+        this.btn('Admin','x',null,{flex:1})
+      ));
+    // rebuild demo buttons with handlers
+    const demo2=this.D({marginTop:30,padding:'18px',border:'1px dashed '+c.green,borderRadius:12,background:'#F3FAF4'},
+      this.D({display:'flex',alignItems:'center',gap:8,marginBottom:12,flexWrap:'wrap'},
+        this.pill('DEMO',c.green,'#fff'),
+        this.E('span',{style:{fontSize:13,fontWeight:700,color:c.text}},'Log direct in als — voor de pitch')),
+      this.D({display:'flex',gap:10},
+        this.E('button',{onClick:()=>this.go('#/app/ouder'),style:{flex:1,padding:'12px',borderRadius:9,border:'1px solid '+c.green,background:'#fff',color:c.green,fontWeight:700,fontSize:14,cursor:'pointer'}},'Ouder'),
+        this.E('button',{onClick:()=>this.go('#/app/admin'),style:{flex:1,padding:'12px',borderRadius:9,border:'none',background:c.green,color:'#fff',fontWeight:700,fontSize:14,cursor:'pointer'}},'Admin')));
+
+    const form=this.D({display:'flex',flexDirection:'column',justifyContent:'center',padding:'clamp(28px,5vw,64px)',background:'#fff'},
+      this.D({maxWidth:380,width:'100%',margin:'0 auto'},
+        this.D({display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:28},
+          logo,
+          this.E('button',{onClick:()=>this.go('#/'),style:{display:'inline-flex',alignItems:'center',gap:6,border:'none',background:'transparent',color:c.sub,fontSize:13,fontWeight:600,cursor:'pointer'}}, this.ic('back',15),'Naar website')),
+        this.E('h2',{style:{margin:'0 0 4px',fontSize:24,fontWeight:800,color:c.text}},'Inloggen'),
+        this.E('p',{style:{margin:'0 0 24px',color:c.sub,fontSize:14}},'Welkom terug — log in op je KICK-account.'),
+        this.D({display:'flex',flexDirection:'column',gap:16},
+          field('E-mailadres','email','jouw@email.nl'),
+          field('Wachtwoord','password','••••••••'),
+          this.D({display:'flex',justifyContent:'flex-end',marginTop:-6},
+            this.E('a',{href:'javascript:void 0',onClick:()=>this.setToast('Demo — wachtwoordherstel niet actief'),style:{fontSize:12.5,color:c.green,fontWeight:600,textDecoration:'none'}},'Wachtwoord vergeten?')),
+          this.btn('Inloggen',()=>this.go('#/app/ouder'),'green',{padding:'14px',fontSize:15,marginTop:2})),
+        this.D({textAlign:'center',marginTop:18,fontSize:13.5,color:c.sub},'Nog geen account? ',
+          this.E('a',{href:'javascript:void 0',onClick:()=>this.setToast('Demo — registratie niet actief'),style:{color:c.green,fontWeight:700,textDecoration:'none'}},'Registreren')),
+        demo2));
+
+    return this.E('div',{className:'ksplit'}, visual, form);
+  }
+
+  // ----------------------------- ADMIN -----------------------------
+  adminNav(){
+    const c=this.c; const items=[
+      ['dashboard','Dashboard'],['trainingen','Trainingen'],['inschrijvingen','Inschrijvingen'],['spelers','Spelers'],
+      ['groepen','Groepen'],['cursussen','Cursussen & Camps'],['financieel','Financieel'],['communicatie','Communicatie'],['instellingen','Instellingen']
+    ];
+    return this.E('div',{className:'kadm-nav',style:{padding:'10px',gap:2}}, items.map(([k,label])=>{
+      const active=this.state.adminView===k;
+      return this.E('button',{key:k,onClick:()=>this.setState({adminView:k,selTraining:null,selPlayer:null}),style:{display:'flex',alignItems:'center',gap:11,padding:'11px 13px',borderRadius:9,border:'none',background:active?'rgba(180,255,57,.14)':'transparent',color:active?'#fff':'rgba(255,255,255,.62)',fontWeight:active?700:600,fontSize:13.5,textAlign:'left',cursor:'pointer',whiteSpace:'nowrap',borderLeft:active?'2px solid '+c.lime:'2px solid transparent'}},
+        this.E('span',{style:{display:'flex',color:active?c.lime:'rgba(255,255,255,.55)'}},this.ic(k,18)),
+        this.E('span',{className:'kadm-navlabel'},label));
+    }));
+  }
+  topbar(crumbs,role){
+    const c=this.c;
+    return this.D({display:'flex',alignItems:'center',gap:16,padding:'14px 26px',borderBottom:'1px solid '+c.line,background:'#fff',flex:'none',flexWrap:'wrap'},
+      this.D({display:'flex',alignItems:'center',gap:8,fontSize:13,color:c.sub,fontWeight:600},
+        crumbs.map((cr,i)=>this.E('span',{key:i,style:{color:i===crumbs.length-1?c.text:c.sub}}, (i?' / ':'')+cr))),
+      this.D({marginLeft:'auto',display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'},
+        this.D({display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:c.paper,border:'1px solid '+c.line,borderRadius:9,color:c.sub},
+          this.ic('search',16), this.E('input',{placeholder:'Zoek speler, cursus…',value:this.state.search,onChange:e=>this.setState({search:e.target.value}),style:{border:'none',background:'transparent',outline:'none',fontSize:13,width:130,color:c.text}})),
+        this.E('button',{onClick:()=>this.go('#/app/ouder'),style:{display:'inline-flex',alignItems:'center',gap:7,padding:'9px 14px',borderRadius:9,border:'1px solid '+c.green,background:'#fff',color:c.green,fontWeight:700,fontSize:13,cursor:'pointer'}}, this.ic('switch',16),'Wissel naar Ouder-view'),
+        this.av('Roy de Geus',34,c.green)));
+  }
+  shellAdmin(){
+    const c=this.c; const v=this.state.adminView;
+    const titleMap={dashboard:'Dashboard',trainingen:'Trainingen',inschrijvingen:'Inschrijvingen',spelers:'Spelers',groepen:'Groepen',cursussen:'Cursussen & Camps',financieel:'Financieel',communicatie:'Communicatie',instellingen:'Instellingen'};
+    let view;
+    if(v==='dashboard') view=this.aDashboard();
+    else if(v==='trainingen') view=this.aTrainingen();
+    else if(v==='inschrijvingen') view=this.aInschrijvingen();
+    else if(v==='spelers') view=this.aSpelers();
+    else if(v==='groepen') view=this.aGroepen();
+    else if(v==='cursussen') view=this.aCursussen();
+    else if(v==='financieel') view=this.aFinancieel();
+    else if(v==='communicatie') view=this.aCommunicatie();
+    else view=this.aInstellingen();
+
+    const side=this.E('aside',{className:'kadm-side'},
+      this.D({padding:'18px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',borderBottom:'1px solid rgba(255,255,255,.08)'},
+        this.E('img',{src:LOGO,alt:'KICK',title:'Naar website',onClick:()=>this.go('#/'),style:{height:30,cursor:'pointer',filter:'brightness(0) invert(1)'}}),
+        this.pill('ADMIN',c.lime,c.ink)),
+      this.adminNav(),
+      this.E('div',{className:'kadm-brandsub',style:{marginTop:'auto',padding:'14px 18px',borderTop:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.5)',fontSize:11.5,lineHeight:1.5}},'Voetbalschool KICK',this.E('br'),'Operationeel dashboard'));
+
+    return this.E('div',{className:'kadm-shell'}, side,
+      this.E('div',{className:'kadm-main'},
+        this.topbar(['KICK','Admin',titleMap[v]]),
+        this.E('div',{className:'kadm-content'}, this.D({padding:'26px',maxWidth:1180,margin:'0 auto'}, view))),
+      this.state.selTraining? this.trainingPanel():null,
+      this.state.selPlayer? this.playerPanel():null,
+      this.state.modal? this.renderModal():null);
+  }
+
+  card(style,...kids){ return this.D(Object.assign({background:'#fff',border:'1px solid '+this.c.line,borderRadius:14,padding:18},style||{}),...kids); }
+  hsec(t,sub){ const c=this.c; return this.D({marginBottom:18}, this.E('h2',{style:{margin:0,fontSize:21,fontWeight:800,color:c.text}},t), sub?this.E('p',{style:{margin:'4px 0 0',color:c.sub,fontSize:14}},sub):null); }
+
+  aDashboard(){
+    const c=this.c;
+    const kpi=(label,val,delta,up,col)=> this.card({display:'flex',flexDirection:'column',gap:6},
+      this.E('span',{style:{fontSize:12.5,color:c.sub,fontWeight:600}},label),
+      this.E('span',{style:{fontSize:30,fontWeight:800,color:c.text,fontFamily:'Inter',lineHeight:1}},val),
+      this.D({display:'inline-flex',alignItems:'center',gap:6},
+        this.E('span',{style:{fontSize:12,fontWeight:700,color:up?c.ok:c.red}}, (up?'▲ ':'▼ ')+delta),
+        this.E('span',{style:{fontSize:12,color:c.sub}},'vs vorige week')));
+    const upcoming=this.db.trainings.slice().sort((a,b)=>a.day-b.day||a.start-b.start).slice(0,5);
+    const days=['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
+    const upRow=(t)=>{ const pr=this.prog(t.prog),lo=this.loc(t.loc);
+      return this.E('button',{key:t.id,onClick:()=>this.openTraining(t),style:{display:'flex',alignItems:'center',gap:14,padding:'12px',borderRadius:11,border:'1px solid '+c.line,background:'#fff',width:'100%',textAlign:'left',cursor:'pointer'}},
+        this.D({width:46,flex:'none',textAlign:'center'}, this.E('div',{style:{fontSize:11,color:c.sub,fontWeight:700,textTransform:'uppercase'}},days[t.day].slice(0,2)), this.E('div',{style:{fontSize:17,fontWeight:800,color:c.text}},t.start+':00')),
+        this.D({flex:1,minWidth:0},
+          this.D({display:'flex',alignItems:'center',gap:8,marginBottom:6}, this.D({width:8,height:8,borderRadius:'50%',background:lo.color,flex:'none'}), this.E('span',{style:{fontWeight:700,fontSize:13.5,color:c.text,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}},pr.short), this.E('span',{style:{fontSize:12,color:c.sub}},'· '+lo.name)),
+          this.bar(t.ids.length,pr.cap,7)),
+        this.E('span',{style:{fontSize:12.5,fontWeight:700,color:c.text,flex:'none'}},t.ids.length+'/'+pr.cap));
+    };
+    const stPill=(s)=> s==='Betaald'?this.payPill('Betaald'): s==='Wachtlijst'?this.pill('Wachtlijst','#FBF1DC','#9A6B00'):this.pill('Open','#EEF1EE',c.sub);
+    const feedRow=(f,i)=> this.D({display:'flex',alignItems:'center',gap:11,padding:'9px 0',borderTop:i?'1px solid '+c.line:'none'},
+      this.av(f.pl,32), this.D({flex:1,minWidth:0}, this.E('div',{style:{fontWeight:700,fontSize:13.5,color:c.text}},f.pl), this.E('div',{style:{fontSize:12,color:c.sub}},f.prog+' · '+f.when)), stPill(f.st));
+
+    // occupancy per course
+    const occ=Object.keys(this.db.programs).map(pid=>{ const tr=this.db.trainings.filter(t=>t.prog===pid); const used=tr.reduce((a,t)=>a+t.ids.length,0); const cap=tr.reduce((a,t)=>a+this.prog(pid).cap,0)||1; return {pid,used,cap}; });
+    const occRow=(o)=>{ const pr=this.prog(o.pid); return this.D({marginBottom:12,key:o.pid},
+      this.D({display:'flex',justifyContent:'space-between',marginBottom:5}, this.E('span',{style:{fontSize:13,fontWeight:600,color:c.text}},pr.short), this.E('span',{style:{fontSize:12,color:c.sub}},Math.round(o.used/o.cap*100)+'%')), this.bar(o.used,o.cap,8,pr.color)); };
+
+    const week=['Ma','Di','Wo','Do','Vr','Za','Zo'].map((d,i)=>{ const has=this.db.trainings.filter(t=>t.day===i).length; return this.D({flex:1,textAlign:'center',key:i},
+      this.E('div',{style:{fontSize:11,color:c.sub,fontWeight:700,marginBottom:6}},d),
+      this.D({height:56,borderRadius:9,background:has?c.green:'#EEF1EE',color:has?'#fff':c.sub,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',fontWeight:800,fontSize:16},has||'–', this.E('span',{style:{fontSize:9,fontWeight:600,opacity:.85}},has?'sessies':''))); });
+
+    return this.D({},
+      this.D({display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,marginBottom:18},
+        this.D({}, this.E('h1',{style:{margin:0,fontSize:24,fontWeight:800,color:c.text}},'Goedemiddag, Roy 👋'),
+          this.E('p',{style:{margin:'4px 0 0',color:c.sub,fontSize:14}},'Hier is wat er vandaag speelt bij KICK.')),
+        this.btn('+ Nieuwe inschrijving',()=>this.setState({adminView:'inschrijvingen',modal:'newEnroll'}),'green')),
+      this.E('div',{className:'kgrid-kpi',style:{marginBottom:18}},
+        kpi('Actieve spelers','87','4',true), kpi('Inschrijvingen deze week','12','3',true),
+        kpi('Openstaande betalingen','€1.245','€320',false), kpi('Bezetting volgende training','78%','6%',true)),
+      this.E('div',{className:'kgrid-2',style:{marginBottom:18}},
+        this.card({}, this.D({display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}, this.E('h3',{style:{margin:0,fontSize:16,fontWeight:800,color:c.text}},'Aankomende trainingen'), this.E('button',{onClick:()=>this.setState({adminView:'trainingen'}),style:{border:'none',background:'transparent',color:c.green,fontWeight:700,fontSize:13,cursor:'pointer'}},'Alles bekijken →')),
+          this.D({display:'flex',flexDirection:'column',gap:8}, upcoming.map(upRow))),
+        this.card({}, this.E('h3',{style:{margin:'0 0 8px',fontSize:16,fontWeight:800,color:c.text}},'Recente inschrijvingen'), this.D({}, this.db.feed.map(feedRow)))),
+      this.E('div',{className:'kgrid-2'},
+        this.card({}, this.E('h3',{style:{margin:'0 0 16px',fontSize:16,fontWeight:800,color:c.text}},'Bezetting per cursus'), occ.map(occRow)),
+        this.card({}, this.E('h3',{style:{margin:'0 0 16px',fontSize:16,fontWeight:800,color:c.text}},'Komende 7 dagen'), this.D({display:'flex',gap:7},week))));
+  }
+
+  // ---- Trainingen (kernscherm) ----
+  openTraining(t){ // seed attendance present
+    const att=Object.assign({},this.state.attendance);
+    t.ids.forEach(id=>{ const k=t.id+':'+id; if(!att[k]) att[k]='present'; });
+    this.setState({selTraining:t.id,attendance:att});
+  }
+  aTrainingen(){
+    const c=this.c; const f=this.state.trFilters;
+    const days=['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
+    const hours=[]; for(let hh=9; hh<=21; hh++) hours.push(hh);
+    const rowH=54;
+    const passes=(t)=> (f.loc==='all'||t.loc===f.loc) && (f.prog==='all'||t.prog===f.prog) && (f.tr==='all'||t.tr===f.tr) && (!f.notFull || t.ids.length<this.prog(t.prog).cap);
+    const sel=(label,val,opts,on)=> this.D({display:'flex',flexDirection:'column',gap:4},
+      this.E('span',{style:{fontSize:11,fontWeight:700,color:c.sub,textTransform:'uppercase',letterSpacing:'.3px'}},label),
+      this.E('select',{value:val,onChange:e=>on(e.target.value),style:{padding:'8px 10px',borderRadius:8,border:'1px solid '+c.line,background:'#fff',fontSize:13,color:c.text,minWidth:130}},
+        opts.map(o=>this.E('option',{key:o[0],value:o[0]},o[1]))));
+
+    const grid=this.D({position:'relative',display:'grid',gridTemplateColumns:'56px repeat(7,1fr)',border:'1px solid '+c.line,borderRadius:12,overflow:'hidden',background:'#fff',minWidth:760},
+      this.D({borderRight:'1px solid '+c.line,borderBottom:'1px solid '+c.line,background:c.paper}),
+      days.map((d,i)=>this.D({key:'h'+i,padding:'10px 8px',textAlign:'center',fontWeight:700,fontSize:12.5,color:c.text,borderBottom:'1px solid '+c.line,borderRight:i<6?'1px solid '+c.line:'none',background:c.paper},d.slice(0,2),this.E('span',{style:{color:c.sub,fontWeight:600}},' '+(i>4?'':''))) ),
+      hours.map((hh,ri)=>[
+        this.D({key:'t'+hh,height:rowH,fontSize:11,color:c.sub,fontWeight:600,padding:'4px 6px',textAlign:'right',borderRight:'1px solid '+c.line,borderBottom:ri<hours.length-1?'1px solid '+c.line:'none'},hh+':00'),
+        days.map((d,di)=>this.D({key:'c'+hh+'-'+di,height:rowH,borderRight:di<6?'1px solid '+c.line:'none',borderBottom:ri<hours.length-1?'1px solid '+c.line:'none',background: (di>4?'#FCFCFB':'#fff')}))
+      ]),
+      // blocks layer
+      this.D({position:'absolute',top:38,left:56,right:0,bottom:0,pointerEvents:'none'},
+        this.D({position:'relative',width:'100%',height:'100%'},
+          this.db.trainings.filter(passes).map(t=>{ const pr=this.prog(t.prog),lo=this.loc(t.loc);
+            const colW=`calc((100% ) / 7)`;
+            const top=(t.start-9)*rowH+3; const h=t.dur*rowH-6;
+            const full=t.ids.length>=pr.cap;
+            return this.E('button',{key:t.id,onClick:()=>this.openTraining(t),style:{pointerEvents:'auto',position:'absolute',left:`calc(${t.day} * ${colW} + 4px)`,width:`calc(${colW} - 8px)`,top,height:h,background:pr.color,border:'none',borderRadius:9,padding:'7px 9px',textAlign:'left',color:'#fff',cursor:'pointer',overflow:'hidden',boxShadow:'0 2px 6px rgba(0,0,0,.14)',display:'flex',flexDirection:'column',gap:3}},
+              this.E('span',{style:{fontSize:11.5,fontWeight:800,lineHeight:1}},t.start+':00'),
+              this.E('span',{style:{fontSize:11.5,fontWeight:600,lineHeight:1.15,opacity:.95,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},pr.short),
+              this.E('span',{style:{marginTop:'auto',fontSize:10.5,fontWeight:700,background:'rgba(0,0,0,.22)',borderRadius:6,padding:'2px 6px',alignSelf:'flex-start'}}, (full?'VOL · ':'')+t.ids.length+'/'+pr.cap));
+          }))));
+
+    return this.D({},
+      this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-end',flexWrap:'wrap',gap:14,marginBottom:16},
+        this.hsec('Trainingen','Klik op een training voor de deelnemerslijst en aanwezigheid.'),
+        this.D({display:'flex',gap:6,background:'#EEF1EE',padding:4,borderRadius:9},
+          ['week','maand'].map(m=>this.E('button',{key:m,onClick:()=>this.setState({trMode:m}),style:{padding:'7px 16px',borderRadius:7,border:'none',background:this.state.trMode===m?'#fff':'transparent',fontWeight:700,fontSize:13,color:c.text,cursor:'pointer',boxShadow:this.state.trMode===m?'0 1px 3px rgba(0,0,0,.12)':'none',textTransform:'capitalize'}},m)))),
+      this.card({padding:14,marginBottom:14,display:'flex',gap:14,flexWrap:'wrap',alignItems:'flex-end'},
+        sel('Locatie',f.loc,[['all','Alle locaties'],['verburch','VV Verburch'],['loosduinen','SV Loosduinen']],v=>this.setState({trFilters:Object.assign({},f,{loc:v})})),
+        sel('Programma',f.prog,[['all','Alle programma\u2019s'],['p1','Techniekcursus'],['p2','Soccer Camp'],['p3','Train als prof'],['p4','Privé & duo']],v=>this.setState({trFilters:Object.assign({},f,{prog:v})})),
+        sel('Trainer',f.tr,[['all','Alle trainers'],['t1','Roy de Geus'],['t2','Wesley Bron'],['t3','Daan Kessler'],['t4','Imran Yıldız'],['t5','Femke Stam']],v=>this.setState({trFilters:Object.assign({},f,{tr:v})})),
+        this.E('label',{style:{display:'inline-flex',alignItems:'center',gap:8,fontSize:13,fontWeight:600,color:c.text,cursor:'pointer',paddingBottom:8}}, this.E('input',{type:'checkbox',checked:f.notFull,onChange:e=>this.setState({trFilters:Object.assign({},f,{notFull:e.target.checked})})}),'Alleen niet-volle'),
+        this.btn('+ Training',()=>this.setToast('Demo — nieuwe training plannen'),'subtle',{marginLeft:'auto'})),
+      this.state.trMode==='maand'? this.monthView() : this.D({overflowX:'auto'},grid));
+  }
+  monthView(){
+    const c=this.c; const cells=[];
+    for(let d=1; d<=30; d++){ const cnt=this.db.trainings.filter(t=> ((d+t.day)%6===0)).length + (d%7<2?1:0);
+      cells.push(this.D({key:d,minHeight:74,border:'1px solid '+c.line,borderRadius:8,padding:7,background:'#fff'},
+        this.E('div',{style:{fontSize:11,fontWeight:700,color:c.sub}},d),
+        cnt?this.D({marginTop:6,display:'flex',flexDirection:'column',gap:3}, Array.from({length:Math.min(cnt,2)}).map((_,i)=>this.D({key:i,fontSize:10,fontWeight:700,color:'#fff',background:i?c.amber:c.green,borderRadius:5,padding:'2px 5px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'},i?'Camp':'Techniek'))):null)); }
+    return this.card({}, this.D({display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:7},cells));
+  }
+  cycleAtt(tid,pid){ const k=tid+':'+pid; const cur=this.state.attendance[k]||'present'; const order=['present','absent','off']; const nx=order[(order.indexOf(cur)+1)%3]; const att=Object.assign({},this.state.attendance); att[k]=nx; this.setState({attendance:att}); }
+  trainingPanel(){
+    const c=this.c; const t=this.db.trainings.find(x=>x.id===this.state.selTraining); if(!t) return null;
+    const pr=this.prog(t.prog),lo=this.loc(t.loc),tr=this.trn(t.tr);
+    const days=['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
+    const stMap={present:['Aanwezig','✓','#E4F4E9',c.ok],absent:['Afwezig','✗','#FBE7E7',c.red],off:['Afgemeld','◷','#FBF1DC','#9A6B00']};
+    const row=(id)=>{ const p=this.player(id); const st=this.state.attendance[t.id+':'+id]||'present'; const s=stMap[st];
+      return this.D({key:id,display:'flex',alignItems:'center',gap:11,padding:'9px 0',borderTop:'1px solid '+c.line},
+        this.av(p.name,34), this.D({flex:1,minWidth:0}, this.E('div',{style:{fontWeight:700,fontSize:13.5,color:c.text}},p.name), this.E('div',{style:{fontSize:12,color:c.sub}},p.age+' jr · '+p.club)),
+        this.E('button',{onClick:()=>this.cycleAtt(t.id,id),style:{display:'inline-flex',alignItems:'center',gap:6,padding:'6px 11px',borderRadius:20,border:'none',background:s[2],color:s[3],fontWeight:700,fontSize:12,cursor:'pointer',minWidth:104,justifyContent:'center'}},s[1]+' '+s[0])); };
+    return this.D({position:'fixed',inset:0,zIndex:2500,display:'flex',justifyContent:'flex-end'},
+      this.D({position:'absolute',inset:0,background:'rgba(10,12,10,.4)',animation:'kfade .2s ease',onClick:()=>this.setState({selTraining:null})}),
+      this.D({position:'relative',width:'min(440px,100%)',height:'100%',background:'#fff',boxShadow:'-12px 0 40px rgba(0,0,0,.2)',display:'flex',flexDirection:'column',animation:'kslide .28s ease'},
+        this.D({padding:'20px',background:pr.color,color:'#fff'},
+          this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-start'},
+            this.D({}, this.E('div',{style:{fontSize:12.5,fontWeight:700,opacity:.9}},days[t.day]+' · '+t.start+':00–'+(t.start+t.dur)+':00'),
+              this.E('h3',{style:{margin:'6px 0 0',fontSize:20,fontWeight:800}},pr.short)),
+            this.E('button',{onClick:()=>this.setState({selTraining:null}),style:{border:'none',background:'rgba(255,255,255,.2)',color:'#fff',width:32,height:32,borderRadius:8,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}},this.ic('close',18))),
+          this.D({display:'flex',alignItems:'center',gap:8,marginTop:14,fontSize:13},this.ic('pin',15),lo.name+' · '+lo.addr),
+          this.D({display:'flex',alignItems:'center',gap:9,marginTop:12},this.av(tr.name,30,'rgba(0,0,0,.25)'),this.D({},this.E('div',{style:{fontWeight:700,fontSize:13}},tr.name),this.E('div',{style:{fontSize:11.5,opacity:.9}},tr.role)))),
+        this.D({padding:'16px 20px',borderBottom:'1px solid '+c.line},
+          this.D({display:'flex',justifyContent:'space-between',marginBottom:7},this.E('span',{style:{fontSize:13,fontWeight:700,color:c.text}},'Capaciteit'),this.E('span',{style:{fontSize:13,fontWeight:700,color:c.text}},t.ids.length+'/'+pr.cap+' spelers')),
+          this.bar(t.ids.length,pr.cap,9)),
+        this.D({flex:1,overflow:'auto',padding:'4px 20px 20px'},
+          this.D({display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px 0 4px'},this.E('span',{style:{fontSize:13,fontWeight:800,color:c.text}},'Deelnemers'),this.E('span',{style:{fontSize:11.5,color:c.sub}},'tik om aanwezigheid te wisselen')),
+          t.ids.map(row)),
+        this.D({padding:'14px 20px',borderTop:'1px solid '+c.line,display:'flex',flexDirection:'column',gap:10},
+          this.btn('Aanwezigheid afronden',()=>{this.setState({selTraining:null});this.setToast('Aanwezigheid opgeslagen');},'green',{width:'100%',padding:'13px'}),
+          this.D({display:'flex',gap:8},
+            this.btn('Bericht ouders',()=>this.setToast('Bericht-composer geopend'),'ghost',{flex:1,fontSize:12.5}),
+            this.btn('Verzetten',()=>this.setToast('Training verzetten'),'ghost',{flex:1,fontSize:12.5}),
+            this.btn('Dupliceren',()=>this.setToast('Training gedupliceerd'),'ghost',{flex:1,fontSize:12.5})))));
+  }
+
+  // ---- Inschrijvingen ----
+  aInschrijvingen(){
+    const c=this.c; const q=this.state.search.toLowerCase();
+    const rows=this.db.players.filter(p=>!q||p.name.toLowerCase().includes(q));
+    const th=(t,cls)=>this.E('th',{className:cls,style:{textAlign:'left',padding:'11px 12px',fontSize:11.5,fontWeight:700,color:c.sub,textTransform:'uppercase',letterSpacing:'.3px',whiteSpace:'nowrap'}},t);
+    const td=(ch,cls)=>this.E('td',{className:cls,style:{padding:'11px 12px',fontSize:13.5,color:c.text,borderTop:'1px solid '+c.line,whiteSpace:'nowrap'}},ch);
+    return this.D({},
+      this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-end',flexWrap:'wrap',gap:12,marginBottom:16},
+        this.hsec('Inschrijvingen','87 spelers ingeschreven over alle programma\u2019s.'),
+        this.D({display:'flex',gap:8},this.btn('Exporteren',()=>this.setToast('Export naar CSV gestart'),'ghost'),this.btn('+ Nieuwe inschrijving',()=>this.setState({modal:'newEnroll'}),'green'))),
+      this.card({padding:0,overflow:'hidden'},
+        this.D({overflowX:'auto'},
+          this.E('table',{style:{width:'100%',borderCollapse:'collapse',minWidth:680}},
+            this.E('thead',null,this.E('tr',{style:{background:c.paper}},th('Speler'),th('Ouder','khide-sm'),th('Programma'),th('Ingeschreven','khide-sm'),th('Status'),th('Betaling'),th('') )),
+            this.E('tbody',null, rows.map(p=>{ const par=p.parent==='par1'?this.db.parentMain.name:this.parentName(p); 
+              return this.E('tr',{key:p.id,style:{cursor:'pointer'},onClick:()=>this.setState({selPlayer:p.id}),onMouseEnter:e=>e.currentTarget.style.background='#FAFBFA',onMouseLeave:e=>e.currentTarget.style.background='#fff'},
+                td(this.D({display:'flex',alignItems:'center',gap:10},this.av(p.name,30),this.D({},this.E('div',{style:{fontWeight:700}},p.name),this.E('div',{style:{fontSize:11.5,color:c.sub}},p.age+' jr · '+p.club)))),
+                td(par,'khide-sm'), td(this.prog(p.course).short), td('14 sep 2026','khide-sm'),
+                td(this.pill('Actief','#E4F4E9',c.ok)), td(this.payPill(p.pay)),
+                td(this.E('button',{onClick:e=>{e.stopPropagation();this.setState({selPlayer:p.id});},style:{border:'1px solid '+c.line,background:'#fff',borderRadius:7,padding:'5px 10px',fontSize:12,fontWeight:700,color:c.text,cursor:'pointer'}},'Bekijk'))); }))))));
+  }
+  parentName(p){ const map={par2:'Karima El Amrani',par3:'Mark Bakker',par4:'Petra Janssen',par5:'Jeroen Brouwer',par6:'Anouk van den Berg',par7:'Tom Achterberg',par8:'Esra Koster',par9:'Wouter Mulder',par10:'Inge Hofman',par11:'Chris de Wit',par12:'Derya Demir',par13:'Bas Smit',par14:'Nadia Peters'}; return map[p.parent]||'—'; }
+
+  // ---- Spelers ----
+  aSpelers(){
+    const c=this.c; const q=this.state.search.toLowerCase();
+    const rows=this.db.players.filter(p=>!q||p.name.toLowerCase().includes(q));
+    const cardP=(p)=> this.E('button',{key:p.id,onClick:()=>this.setState({selPlayer:p.id}),style:{textAlign:'left',background:'#fff',border:'1px solid '+c.line,borderRadius:13,padding:16,cursor:'pointer',display:'flex',flexDirection:'column',gap:11}},
+      this.D({display:'flex',alignItems:'center',gap:11}, this.av(p.name,42), this.D({flex:1,minWidth:0}, this.E('div',{style:{fontWeight:700,fontSize:14.5,color:c.text}},p.name), this.E('div',{style:{fontSize:12,color:c.sub}},p.age+' jaar · '+p.club))),
+      this.D({display:'flex',gap:6,flexWrap:'wrap'}, this.pill(this.prog(p.course).short,'#EEF1EE',c.text), this.pill('Maat '+p.size,'#EEF1EE',c.sub)),
+      this.D({}, this.D({display:'flex',justifyContent:'space-between',marginBottom:5}, this.E('span',{style:{fontSize:11.5,color:c.sub,fontWeight:600}},'Aanwezigheid'), this.E('span',{style:{fontSize:11.5,fontWeight:700,color:c.text}},p.att+'%')), this.bar(p.att,100,7,p.att>=85?c.ok:p.att>=70?c.amber:c.red)),
+      this.D({display:'flex',justifyContent:'space-between',alignItems:'center'}, this.payPill(p.pay), this.E('span',{style:{fontSize:12,fontWeight:700,color:c.green}},'Profiel →')));
+    return this.D({},
+      this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-end',flexWrap:'wrap',gap:12,marginBottom:16}, this.hsec('Spelers','Alle ingeschreven spelers met aanwezigheid en betaalstatus.'), this.btn('+ Speler toevoegen',()=>this.setState({modal:'newEnroll'}),'green')),
+      this.E('div',{className:'kgrid-childs'}, rows.map(cardP)));
+  }
+  playerPanel(){
+    const c=this.c; const p=this.player(this.state.selPlayer); if(!p) return null;
+    const par=p.parent==='par1'?this.db.parentMain.name:this.parentName(p);
+    const seed=(n)=>{ let a=[]; let s=n; for(let i=0;i<35;i++){ s=(s*9301+49297)%233280; a.push(s/233280); } return a; };
+    const heat=seed(p.age*7+p.name.length);
+    const info=(l,v)=>this.D({display:'flex',justifyContent:'space-between',padding:'9px 0',borderTop:'1px solid '+c.line}, this.E('span',{style:{fontSize:13,color:c.sub}},l), this.E('span',{style:{fontSize:13,fontWeight:700,color:c.text}},v));
+    return this.D({position:'fixed',inset:0,zIndex:2500,display:'flex',justifyContent:'flex-end'},
+      this.D({position:'absolute',inset:0,background:'rgba(10,12,10,.4)',animation:'kfade .2s ease',onClick:()=>this.setState({selPlayer:null})}),
+      this.D({position:'relative',width:'min(440px,100%)',height:'100%',background:'#fff',boxShadow:'-12px 0 40px rgba(0,0,0,.2)',display:'flex',flexDirection:'column',animation:'kslide .28s ease',overflow:'auto'},
+        this.D({padding:'22px 20px',background:'linear-gradient(135deg,'+c.green+','+c.greenD+')',color:'#fff'},
+          this.D({display:'flex',justifyContent:'flex-end'}, this.E('button',{onClick:()=>this.setState({selPlayer:null}),style:{border:'none',background:'rgba(255,255,255,.2)',color:'#fff',width:32,height:32,borderRadius:8,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}},this.ic('close',18))),
+          this.D({display:'flex',alignItems:'center',gap:14,marginTop:-6}, this.av(p.name,56,'rgba(0,0,0,.25)'), this.D({}, this.E('h3',{style:{margin:0,fontSize:22,fontWeight:800}},p.name), this.E('div',{style:{fontSize:13,opacity:.9,marginTop:3}},p.age+' jaar · '+p.club)))),
+        this.D({padding:'18px 20px'},
+          this.E('h4',{style:{margin:'0 0 4px',fontSize:13,fontWeight:800,color:c.text,textTransform:'uppercase',letterSpacing:'.3px'}},'Gegevens'),
+          info('Ouder / contact',par), info('Huidige cursus',this.prog(p.course).short), info('Tenuemaat',p.size), info('Aanwezigheid',p.att+'%'), info('Betaalstatus',p.pay==='paid'?'Betaald':p.pay==='overdue'?'Verlopen':'Open'),
+          this.E('h4',{style:{margin:'20px 0 10px',fontSize:13,fontWeight:800,color:c.text,textTransform:'uppercase',letterSpacing:'.3px'}},'Aanwezigheid (laatste weken)'),
+          this.D({display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:5}, heat.map((v,i)=>this.D({key:i,paddingTop:'100%',borderRadius:4,background: v>0.7?c.green : v>0.4?'#7CC894' : v>0.2?'#CDE9D6' : '#EAECEA'}))),
+          this.E('h4',{style:{margin:'20px 0 8px',fontSize:13,fontWeight:800,color:c.text,textTransform:'uppercase',letterSpacing:'.3px'}},'Admin-notities'),
+          this.E('textarea',{defaultValue:'Sterke linksbenige speler. Werkt aan handelingssnelheid onder druk. Ouder bereikbaar via WhatsApp.',style:{width:'100%',minHeight:80,border:'1px solid '+c.line,borderRadius:10,padding:11,fontSize:13,color:c.text,resize:'vertical'}}),
+          this.D({display:'flex',gap:8,marginTop:14}, this.btn('Bericht ouder',()=>this.setToast('Bericht naar '+par),'ghost',{flex:1}), this.btn('Notitie opslaan',()=>this.setToast('Notitie opgeslagen'),'green',{flex:1})))));
+  }
+
+  // ---- Groepen (drag & drop) ----
+  onDrop(target){ const id=this.state.dragId; if(!id) return;
+    let pool=this.state.pool.filter(x=>x!==id); let groups=this.state.groups.map(g=>({...g,ids:g.ids.filter(x=>x!==id)}));
+    if(target==='pool'){ pool=pool.concat([id]); } else { groups=groups.map(g=> g.id===target? {...g,ids:g.ids.concat([id])}:g); }
+    this.setState({pool,groups,dragId:null});
+  }
+  suggest(){ let groups=this.state.groups.map(g=>({...g,ids:g.ids.slice()})); const pool=this.state.pool.slice();
+    pool.forEach(id=>{ const p=this.player(id); let gi = p.age<=7?0 : p.age<=10?1 : 2; if(groups[gi]) groups[gi].ids.push(id); });
+    this.setState({groups,pool:[],dragId:null}); this.setToast('AI-indeling toegepast op leeftijd & niveau');
+  }
+  chip(id,from){ const c=this.c; const p=this.player(id); const picked=this.state.dragId===id;
+    return this.E('div',{key:id,'data-chip':true,draggable:true,
+      onDragStart:()=>this.setState({dragId:id}),
+      onDragEnd:()=>this.setState(s=>s.dragId===id?{dragId:null}:null),
+      onClick:e=>{ e.stopPropagation(); this.setState({dragId:picked?null:id}); },
+      className:picked?'kchip-picked':'',
+      style:{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#fff',border:'1px solid '+c.line,borderRadius:9,cursor:'grab',boxShadow:'0 1px 2px rgba(0,0,0,.04)'}},
+      this.av(p.name,28), this.D({flex:1,minWidth:0}, this.E('div',{style:{fontSize:12.5,fontWeight:700,color:c.text,whiteSpace:'nowrap'}},p.name), this.E('div',{style:{fontSize:11,color:c.sub}},p.age+' jr')), this.E('span',{style:{fontSize:14,color:c.sub}},picked?'✓':'⠿'));
+  }
+  aGroepen(){
+    const c=this.c; const picking=!!this.state.dragId;
+    const dropZone=(target,style,...kids)=> this.E('div',{'data-dropzone':true,
+      onDragOver:e=>e.preventDefault(), onDrop:()=>this.onDrop(target),
+      onClick:()=>{ if(this.state.dragId) this.onDrop(target); },
+      className:picking?'kzone-target':'',
+      style},...kids);
+    const pool=dropZone('pool',{background:'#fff',border:'1px solid '+c.line,borderRadius:13,padding:14,display:'flex',flexDirection:'column',gap:8,minHeight:200},
+      this.D({display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}, this.E('h3',{style:{margin:0,fontSize:14.5,fontWeight:800,color:c.text}},'Niet ingedeeld'), this.pill(this.state.pool.length+'','#EEF1EE',c.sub)),
+      this.state.pool.length? this.state.pool.map(id=>this.chip(id,'pool')) : this.D({color:c.sub,fontSize:12.5,textAlign:'center',padding:'30px 0'},'Iedereen ingedeeld 🎉'));
+    const groupCard=(g)=> dropZone(g.id,{background:'#fff',border:'1px solid '+c.line,borderRadius:13,padding:14,display:'flex',flexDirection:'column',gap:8},
+      this.D({}, this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:8}, this.E('h3',{style:{margin:0,fontSize:13.5,fontWeight:800,color:c.text,lineHeight:1.3}},g.name), this.pill(g.ids.length+'/'+g.cap, g.ids.length>=g.cap?'#FBE7E7':'#E4F4E9', g.ids.length>=g.cap?c.red:c.ok)),
+        this.D({display:'flex',alignItems:'center',gap:7,margin:'8px 0 6px'}, this.av(g.trainer,22,c.green), this.E('span',{style:{fontSize:12,color:c.sub,fontWeight:600}},g.trainer)), this.bar(g.ids.length,g.cap,7)),
+      this.D({display:'flex',flexDirection:'column',gap:7,marginTop:4,minHeight:60}, g.ids.length? g.ids.map(id=>this.chip(id,g.id)) : this.D({border:'1.5px dashed '+c.line,borderRadius:9,color:c.sub,fontSize:12,textAlign:'center',padding:'18px 0'},'Sleep spelers hierheen')));
+    return this.D({},
+      this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-end',flexWrap:'wrap',gap:12,marginBottom:12},
+        this.hsec('Groepen','Sleep spelers naar de juiste groep — of laat KICK het voorstellen.'),
+        this.btn('✨ Suggesteer indeling',()=>this.suggest(),'green')),
+      this.D({marginBottom:16,padding:'10px 14px',background:picking?'#F3FAF4':'#EEF1EE',border:'1px solid '+(picking?c.green:c.line),borderRadius:10,fontSize:12.5,color:picking?c.green:c.sub,fontWeight:picking?700:600,transition:'background .15s'},
+        picking? 'Speler geselecteerd — tik nu op een groep om te plaatsen.' : 'Op telefoon: tik een speler aan om te selecteren, tik daarna op een groep om te plaatsen. Op desktop kun je ook slepen.'),
+      this.E('div',{className:'kgroep-grid'},
+        pool,
+        this.D({display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:14}, this.state.groups.map(groupCard))));
+  }
+
+  // ---- Cursussen ----
+  aCursussen(){
+    const c=this.c;
+    const cc=(pid)=>{ const pr=this.db.programs[pid]; const tr=this.db.trainings.filter(t=>t.prog===pid); const used=tr.reduce((a,t)=>a+t.ids.length,0); const cap=pr.cap*(tr.length||1);
+      return this.card({display:'flex',flexDirection:'column',gap:12,borderTop:'4px solid '+pr.color,key:pid},
+        this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:10}, this.E('h3',{style:{margin:0,fontSize:16,fontWeight:800,color:c.text,lineHeight:1.25}},pr.name), pr.status==='Open'?this.pill('Open','#E4F4E9',c.ok):this.pill('Wachtlijst','#FBF1DC','#9A6B00')),
+        this.D({display:'grid',gridTemplateColumns:'1fr 1fr',gap:'9px 14px'},
+          this.kv('Periode',pr.period), this.kv('Schema',pr.schema), this.kv('Locatie',pr.loc), this.kv('Prijs',pr.priceNew===pr.priceMember?('€'+pr.priceNew):('€'+pr.priceNew+' / €'+pr.priceMember+' lid'))),
+        this.D({}, this.D({display:'flex',justifyContent:'space-between',marginBottom:5}, this.E('span',{style:{fontSize:12,color:c.sub,fontWeight:600}},'Bezetting'), this.E('span',{style:{fontSize:12,fontWeight:700,color:c.text}},used+'/'+cap)), this.bar(used,cap,8,pr.color)),
+        this.D({display:'flex',gap:8}, this.btn('Bewerken',()=>this.setToast('Cursus bewerken'),'ghost',{flex:1}), this.btn('Deelnemers',()=>this.setState({adminView:'inschrijvingen'}),'subtle',{flex:1}))); };
+    return this.D({},
+      this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-end',flexWrap:'wrap',gap:12,marginBottom:16}, this.hsec('Cursussen & Camps','Beheer alle programma\u2019s, prijzen en periodes.'), this.btn('+ Nieuwe cursus',()=>this.setState({modal:'newCourse'}),'green')),
+      this.D({display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:16}, Object.keys(this.db.programs).map(cc)));
+  }
+  kv(l,v){ const c=this.c; return this.D({}, this.E('div',{style:{fontSize:11,color:c.sub,fontWeight:700,textTransform:'uppercase',letterSpacing:'.3px'}},l), this.E('div',{style:{fontSize:13,fontWeight:600,color:c.text,marginTop:2}},v)); }
+
+  // ---- Financieel ----
+  aFinancieel(){
+    const c=this.c; const max=Math.max(...this.db.revenue.map(r=>r.v));
+    const chart=this.card({}, this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:16}, this.D({}, this.E('h3',{style:{margin:0,fontSize:16,fontWeight:800,color:c.text}},'Omzet per maand'), this.E('div',{style:{fontSize:13,color:c.sub,marginTop:3}},'Totaal 2026 · €47.500')), this.pill('+18% YoY','#E4F4E9',c.ok)),
+      this.D({display:'flex',alignItems:'flex-end',gap:10,height:180}, this.db.revenue.map(r=>this.D({key:r.m,flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:7,height:'100%',justifyContent:'flex-end'},
+        this.E('span',{style:{fontSize:11,fontWeight:700,color:c.text}},'€'+(r.v/1000).toFixed(1)+'k'),
+        this.D({width:'100%',height:(r.v/max*130)+'px',background:r.m==='sep'?c.green:'#CDE9D6',borderRadius:'6px 6px 0 0',animation:'kbar .8s ease'}),
+        this.E('span',{style:{fontSize:11,color:c.sub,fontWeight:600}},r.m)))));
+    const stat=(l,v,col)=>this.card({display:'flex',flexDirection:'column',gap:4}, this.E('span',{style:{fontSize:12.5,color:c.sub,fontWeight:600}},l), this.E('span',{style:{fontSize:24,fontWeight:800,color:col||c.text}},v));
+    const th=(t)=>this.E('th',{style:{textAlign:'left',padding:'10px 12px',fontSize:11.5,fontWeight:700,color:c.sub,textTransform:'uppercase'}},t);
+    const td=(ch)=>this.E('td',{style:{padding:'10px 12px',fontSize:13,color:c.text,borderTop:'1px solid '+c.line,whiteSpace:'nowrap'}},ch);
+    return this.D({},
+      this.hsec('Financieel','Omzet, openstaande facturen en iDEAL-transacties (gesimuleerd).'),
+      this.D({className:'kgrid-kpi',style:{marginBottom:16}}, stat('Omzet deze maand','€7.400'), stat('Openstaand','€1.245',c.amber), stat('Verlopen','€290',c.red), stat('Kortingen verleend','€640')),
+      this.D({className:'kgrid-2'}, chart,
+        this.card({padding:0,overflow:'hidden'}, this.D({padding:'14px 16px',borderBottom:'1px solid '+c.line}, this.E('h3',{style:{margin:0,fontSize:15,fontWeight:800,color:c.text}},'iDEAL-transacties')),
+          this.D({overflowX:'auto'}, this.E('table',{style:{width:'100%',borderCollapse:'collapse',minWidth:420}}, this.E('thead',null,this.E('tr',{style:{background:c.paper}},th('Factuur'),th('Speler'),th('Bedrag'),th('Status'))),
+            this.E('tbody',null, this.db.invoices.map(iv=>this.E('tr',{key:iv.id},td(iv.id),td(iv.pl),td('€'+iv.amount),td(this.payPill(iv.status))))))))));
+  }
+
+  // ---- Communicatie ----
+  aCommunicatie(){
+    const c=this.c; const cm=this.state.composer;
+    const tpls=[['','Leeg bericht'],['bevestiging','Bevestiging inschrijving'],['herinnering','Herinnering training morgen'],['afgelast','Training afgelast'],['certificaat','Certificaat klaar']];
+    const tplBody={bevestiging:'Beste ouder,\n\nDe inschrijving is bevestigd. We zien jullie graag bij de eerste training!\n\nSportieve groet,\nTeam KICK',herinnering:'Beste ouder,\n\nKleine herinnering: morgen is er training om 18:00 op VV Verburch bij Roy de Geus. Tot dan!\n\nTeam KICK',afgelast:'Beste ouder,\n\nHelaas gaat de training van morgen niet door i.v.m. het weer. De training wordt later ingehaald.\n\nTeam KICK',certificaat:'Beste ouder,\n\nHet certificaat van de afgelopen cursus staat klaar. Je kunt het downloaden in het ouderportaal.\n\nTeam KICK'};
+    const set=(o)=>this.setState({composer:Object.assign({},cm,o)});
+    return this.D({},
+      this.hsec('Communicatie','Stuur een bericht naar een doelgroep met een kant-en-klare template.'),
+      this.D({className:'kgrid-2'},
+        this.card({display:'flex',flexDirection:'column',gap:14},
+          this.D({}, this.E('label',{style:{fontSize:12,fontWeight:700,color:c.sub,textTransform:'uppercase'}},'Doelgroep'),
+            this.E('select',{value:cm.audience,onChange:e=>set({audience:e.target.value}),style:{width:'100%',marginTop:6,padding:'11px',borderRadius:9,border:'1px solid '+c.line,fontSize:13.5}}, ['Alle ouders (87)','Techniekcursus — najaar (52)','Soccer Camp — kerst (18)','Openstaande betalingen (9)','Wachtlijst (4)'].map(o=>this.E('option',{key:o},o)))),
+          this.D({}, this.E('label',{style:{fontSize:12,fontWeight:700,color:c.sub,textTransform:'uppercase'}},'Template'),
+            this.D({display:'flex',gap:7,flexWrap:'wrap',marginTop:6}, tpls.map(t=>this.E('button',{key:t[0],onClick:()=>set({template:t[0],subj:t[1]==='Leeg bericht'?'':t[1],body:tplBody[t[0]]||''}),style:{padding:'7px 12px',borderRadius:20,border:'1px solid '+(cm.template===t[0]?c.green:c.line),background:cm.template===t[0]?'#EAF6EE':'#fff',color:cm.template===t[0]?c.green:c.text,fontSize:12.5,fontWeight:600,cursor:'pointer'}},t[1])))),
+          this.E('input',{value:cm.subj,onChange:e=>set({subj:e.target.value}),placeholder:'Onderwerp',style:{padding:'11px',borderRadius:9,border:'1px solid '+c.line,fontSize:14}}),
+          this.E('textarea',{value:cm.body,onChange:e=>set({body:e.target.value}),placeholder:'Schrijf je bericht…',style:{minHeight:170,padding:'12px',borderRadius:9,border:'1px solid '+c.line,fontSize:13.5,resize:'vertical',lineHeight:1.5}}),
+          this.D({display:'flex',gap:9,alignItems:'center'}, this.btn('Verstuur bericht',()=>{this.setToast('Bericht verstuurd naar '+cm.audience);},'green'), this.E('span',{style:{fontSize:12.5,color:c.sub}},'Wordt direct verzonden (gesimuleerd)'))),
+        this.card({background:c.paper}, this.E('h3',{style:{margin:'0 0 12px',fontSize:14,fontWeight:800,color:c.text}},'Voorbeeld'),
+          this.D({background:'#fff',border:'1px solid '+c.line,borderRadius:11,overflow:'hidden'},
+            this.D({padding:'12px 14px',borderBottom:'1px solid '+c.line,display:'flex',alignItems:'center',gap:10}, this.av('KICK',32,c.green), this.D({}, this.E('div',{style:{fontWeight:700,fontSize:13,color:c.text}},'Voetbalschool KICK'), this.E('div',{style:{fontSize:11.5,color:c.sub}},'info@voetbalschoolkick.nl'))),
+            this.D({padding:'14px'}, this.E('div',{style:{fontWeight:800,fontSize:14.5,color:c.text,marginBottom:8}},cm.subj||'(Onderwerp)'), this.E('div',{style:{fontSize:13,color:c.text,whiteSpace:'pre-wrap',lineHeight:1.55}},cm.body||'Je bericht verschijnt hier…'))))));
+  }
+  aInstellingen(){
+    const c=this.c;
+    const trow=(l,d,on)=>this.D({display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px 0',borderTop:'1px solid '+c.line}, this.D({}, this.E('div',{style:{fontWeight:700,fontSize:14,color:c.text}},l), this.E('div',{style:{fontSize:12.5,color:c.sub,marginTop:2}},d)), this.D({width:42,height:24,borderRadius:20,background:on?c.green:'#D6DAD6',position:'relative',cursor:'pointer',flex:'none'}, this.D({position:'absolute',top:3,left:on?21:3,width:18,height:18,borderRadius:'50%',background:'#fff',transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.2)'})));
+    return this.D({}, this.hsec('Instellingen','Voorkeuren voor de voetbalschool en het portaal.'),
+      this.D({className:'kgrid-2'},
+        this.card({}, this.E('h3',{style:{margin:'0 0 4px',fontSize:15,fontWeight:800,color:c.text}},'Organisatie'),
+          this.kv('Naam','Voetbalschool KICK'), this.D({height:10}), this.kv('Hoofdlocatie','VV Verburch · Arckelweg 20, Poeldijk'), this.D({height:10}), this.kv('E-mail','info@voetbalschoolkick.nl')),
+        this.card({}, this.E('h3',{style:{margin:'0 0 2px',fontSize:15,fontWeight:800,color:c.text}},'Meldingen'),
+          trow('Automatische trainingsherinnering','Mail ouders 24u van tevoren',true), trow('Wachtlijst-notificaties','Mail zodra er plek vrijkomt',true), trow('Betaalherinneringen','Herinner bij openstaande facturen',false))));
+  }
+
+  // ----------------------------- OUDER -----------------------------
+  parentNav(){
+    const c=this.c; const items=[['overzicht','Mijn overzicht'],['inschrijven','Inschrijven'],['kinderen','Mijn kinderen'],['betalingen','Betalingen'],['berichten','Berichten']];
+    return this.E('div',{className:'kpar-nav',style:{padding:'10px'}}, items.map(([k,label])=>{ const active=this.state.parentView===k;
+      return this.E('button',{key:k,onClick:()=>this.setState({parentView:k}),style:{display:'flex',flexDirection:'column',alignItems:'center',gap:4,flex:1,padding:'10px 8px',borderRadius:10,border:'none',background:active?'#EAF6EE':'transparent',color:active?c.green:c.sub,fontWeight:active?700:600,cursor:'pointer'}},
+        this.E('span',{style:{display:'flex'}},this.ic(k==='inschrijven'?'inschrijven':k,20)), this.E('span',{className:'kpar-navtext',style:{fontSize:12.5}},label));
+    }));
+  }
+  shellParent(){
+    const c=this.c; const v=this.state.parentView; let view;
+    if(v==='overzicht') view=this.pOverzicht(); else if(v==='inschrijven') view=this.pInschrijven(); else if(v==='kinderen') view=this.pKinderen(); else if(v==='betalingen') view=this.pBetalingen(); else view=this.pBerichten();
+    const side=this.E('aside',{className:'kpar-side'},
+      this.E('div',{className:'kpar-sidehead',style:{padding:'18px 16px',borderBottom:'1px solid '+c.line,display:'flex',alignItems:'center',justifyContent:'space-between'}},
+        this.E('img',{src:LOGO,alt:'KICK',title:'Naar website',onClick:()=>this.go('#/'),style:{height:30,cursor:'pointer'}}), this.pill('OUDER','#EAF6EE',c.green)),
+      this.parentNav(),
+      this.E('div',{className:'kpar-sidehead',style:{marginTop:'auto',padding:'14px'}}, this.E('button',{onClick:()=>this.go('#/app/admin'),style:{width:'100%',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,padding:'11px',borderRadius:9,border:'1px solid '+c.green,background:'#fff',color:c.green,fontWeight:700,fontSize:13,cursor:'pointer'}}, this.ic('switch',16),'Naar Admin-view')));
+    const topbar=this.D({display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 18px',background:'#fff',borderBottom:'1px solid '+c.line,position:'sticky',top:0,zIndex:10},
+      this.E('img',{src:LOGO,alt:'KICK',onClick:()=>this.go('#/'),style:{height:26,cursor:'pointer'}}),
+      this.D({display:'flex',alignItems:'center',gap:12}, this.E('button',{onClick:()=>this.go('#/app/admin'),style:{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 12px',borderRadius:8,border:'1px solid '+c.green,background:'#fff',color:c.green,fontWeight:700,fontSize:12.5,cursor:'pointer'}},this.ic('switch',15),'Admin-view'), this.av('Sandra de Vries',32,c.green)));
+    return this.E('div',{className:'kpar-shell'}, side,
+      this.E('div',{className:'kpar-main'}, topbar, this.E('div',{className:'kpar-content kpar-pad',style:{padding:'24px 22px',maxWidth:1080,margin:'0 auto'}}, view)),
+      this.state.modal?this.renderModal():null);
+  }
+
+  pOverzicht(){
+    const c=this.c; const par=this.db.parentMain;
+    const days=['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
+    const nextFor=(pid)=>{ const t=this.db.trainings.find(t=>t.ids.includes(pid)); return t; };
+    const seed=(n)=>{ let a=[]; let s=n; for(let i=0;i<28;i++){ s=(s*9301+49297)%233280; a.push(s/233280);} return a; };
+    const kidCard=(pid)=>{ const p=this.player(pid); const t=nextFor(pid); const pr=t?this.prog(t.prog):null; const lo=t?this.loc(t.loc):null; const tr=t?this.trn(t.tr):null; const heat=seed(p.name.length*5+p.age);
+      return this.card({key:pid,padding:0,overflow:'hidden'},
+        this.D({padding:'16px 18px',display:'flex',alignItems:'center',gap:13,borderBottom:'1px solid '+c.line}, this.av(p.name,48), this.D({flex:1}, this.E('div',{style:{fontWeight:800,fontSize:17,color:c.text}},p.name), this.E('div',{style:{fontSize:13,color:c.sub,marginTop:2}},p.age+' jaar · '+this.prog(p.course).short)), this.payPill(p.pay)),
+        t?this.D({padding:'14px 18px',background:'#F6FAF6',borderBottom:'1px solid '+c.line},
+          this.D({display:'flex',alignItems:'center',gap:8,marginBottom:8}, this.E('span',{style:{color:c.green,display:'flex'}},this.ic('clock',16)), this.E('span',{style:{fontSize:12.5,fontWeight:700,color:c.green,textTransform:'uppercase',letterSpacing:'.3px'}},'Volgende training')),
+          this.D({fontSize:14,fontWeight:700,color:c.text},days[t.day]+' · '+t.start+':00–'+(t.start+t.dur)+':00'),
+          this.D({fontSize:13,color:c.sub,marginTop:3,display:'flex',alignItems:'center',gap:6},this.ic('pin',14),lo.name+' · '+tr.name),
+          this.D({display:'flex',gap:8,marginTop:12}, this.btn('+ Agenda',()=>this.setToast('Toegevoegd aan agenda'),'ghost',{flex:1,fontSize:12.5,padding:'9px'}), this.btn('Afmelden',()=>this.setToast(p.name+' afgemeld voor training'),'subtle',{flex:1,fontSize:12.5,padding:'9px'}), this.btn('Bericht trainer',()=>this.setState({parentView:'berichten'}),'ghost',{flex:1,fontSize:12.5,padding:'9px'}))):null,
+        this.D({padding:'14px 18px'}, this.D({display:'flex',justifyContent:'space-between',marginBottom:9}, this.E('span',{style:{fontSize:12.5,fontWeight:700,color:c.text}},'Aanwezigheid'), this.E('span',{style:{fontSize:12,color:c.sub}},'laatste 4 weken')),
+          this.D({display:'grid',gridTemplateColumns:'repeat(14,1fr)',gap:4}, heat.map((vv,i)=>this.D({key:i,paddingTop:'100%',borderRadius:3,background: vv>0.7?c.green:vv>0.45?'#7CC894':vv>0.25?'#CDE9D6':'#EAECEA'})))));
+    };
+    return this.D({},
+      this.D({marginBottom:20}, this.E('h1',{style:{margin:0,fontSize:26,fontWeight:800,color:c.text}},'Welkom terug, Sandra'), this.E('p',{style:{margin:'5px 0 0',color:c.sub,fontSize:14.5}},'Je hebt '+par.kids.length+' kinderen actief bij KICK. Hier is hun overzicht.')),
+      this.card({display:'flex',alignItems:'center',justifyContent:'space-between',gap:14,marginBottom:18,background:'linear-gradient(135deg,'+c.green+','+c.greenD+')',border:'none',color:'#fff',flexWrap:'wrap'},
+        this.D({}, this.E('div',{style:{fontWeight:800,fontSize:17}},'Klaar voor het volgende seizoen?'), this.E('div',{style:{fontSize:13.5,opacity:.9,marginTop:3}},'Schrijf een kind in voor de Techniekcursus of Soccer Camp.')),
+        this.btn('Inschrijven',()=>this.setState({parentView:'inschrijven'}),'lime')),
+      this.E('div',{className:'kgrid-childs'}, par.kids.map(kidCard)));
+  }
+
+  // ---- Inschrijven wizard ----
+  setEnroll(o){ this.setState({enroll:Object.assign({},this.state.enroll,o)}); }
+  pInschrijven(){
+    const c=this.c; const e=this.state.enroll;
+    if(e.done) return this.enrollSuccess();
+    const steps=['Programma','Groep & tijd','Kind','Extra info','Overzicht','Betalen'];
+    const stepper=this.D({display:'flex',gap:6,marginBottom:22,flexWrap:'wrap'}, steps.map((s,i)=>{ const n=i+1; const on=e.step===n; const done=e.step>n;
+      return this.D({key:s,display:'flex',alignItems:'center',gap:8,flex:'1 1 120px'},
+        this.D({width:26,height:26,borderRadius:'50%',flex:'none',background:done?c.green:on?c.green:'#E7E9E7',color:done||on?'#fff':c.sub,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12.5,fontWeight:700},done?'✓':n),
+        this.E('span',{style:{fontSize:12.5,fontWeight:on?700:600,color:on?c.text:c.sub,whiteSpace:'nowrap'}},s)); }));
+    let body;
+    if(e.step===1) body=this.enrollStep1();
+    else if(e.step===2) body=this.enrollStep2();
+    else if(e.step===3) body=this.enrollStep3();
+    else if(e.step===4) body=this.enrollStep4();
+    else if(e.step===5) body=this.enrollStep5();
+    else body=this.enrollStep6();
+    const canNext = e.step===1? !!e.program : e.step===2? !!e.slot : e.step===3? (!!e.child||(e.newChild&&e.newName)) : true;
+    const nav=this.D({display:'flex',justifyContent:'space-between',marginTop:22,gap:10},
+      e.step>1? this.btn('Terug',()=>this.setEnroll({step:e.step-1}),'ghost'):this.D({}),
+      e.step<6? this.btn('Volgende',()=> canNext? this.setEnroll({step:e.step+1}) : this.setToast('Maak eerst een keuze'),'green',{opacity:canNext?1:.55}) : null);
+    return this.D({}, this.E('h1',{style:{margin:'0 0 4px',fontSize:24,fontWeight:800,color:c.text}},'Inschrijven'), this.E('p',{style:{margin:'0 0 20px',color:c.sub,fontSize:14}},'In een paar stappen geregeld.'),
+      stepper, this.card({},body, e.step<6?nav:null));
+  }
+  enrollStep1(){
+    const c=this.c; const e=this.state.enroll;
+    const opt=(pid)=>{ const pr=this.db.programs[pid]; const on=e.program===pid;
+      return this.E('button',{key:pid,onClick:()=>this.setEnroll({program:pid,slot:null}),style:{textAlign:'left',padding:16,borderRadius:13,border:'2px solid '+(on?c.green:c.line),background:on?'#F3FAF4':'#fff',cursor:'pointer',display:'flex',flexDirection:'column',gap:8}},
+        this.D({display:'flex',justifyContent:'space-between',alignItems:'flex-start'}, this.D({width:38,height:38,borderRadius:10,background:pr.color,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:800,fontFamily:'Anton'},pr.short[0]), on?this.E('span',{style:{color:c.green,display:'flex'}},this.ic('check',20)):null),
+        this.E('div',{style:{fontWeight:800,fontSize:15,color:c.text}},pr.short),
+        this.E('div',{style:{fontSize:12.5,color:c.sub,lineHeight:1.4}},pr.period),
+        this.E('div',{style:{fontSize:13,fontWeight:700,color:c.text}}, pr.priceNew===pr.priceMember?('€'+pr.priceNew):('vanaf €'+pr.priceMember))); };
+    return this.D({}, this.E('h3',{style:{margin:'0 0 14px',fontSize:16,fontWeight:800,color:c.text}},'Kies een programma'),
+      this.D({display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12}, Object.keys(this.db.programs).map(opt)));
+  }
+  enrollStep2(){
+    const c=this.c; const e=this.state.enroll;
+    const slots=[
+      {id:'s1',label:'5–8 jaar',time:'17:00–18:00',loc:'VV Verburch',left:3},
+      {id:'s2',label:'8–11 jaar',time:'18:00–19:00',loc:'VV Verburch',left:1},
+      {id:'s3',label:'11–14 jaar',time:'19:00–20:00',loc:'VV Verburch',left:0},
+      {id:'s4',label:'5–8 jaar',time:'17:00–18:00',loc:'SV Loosduinen',left:6}
+    ];
+    const row=(s)=>{ const on=e.slot===s.id; const full=s.left===0;
+      return this.E('button',{key:s.id,disabled:full,onClick:()=>this.setEnroll({slot:s.id}),style:{textAlign:'left',padding:'14px 16px',borderRadius:12,border:'2px solid '+(on?c.green:c.line),background:on?'#F3FAF4':full?'#FAFAFA':'#fff',cursor:full?'not-allowed':'pointer',display:'flex',alignItems:'center',gap:14,opacity:full?.75:1,width:'100%'}},
+        this.D({flex:'none',textAlign:'center',minWidth:54}, this.E('div',{style:{fontWeight:800,fontSize:15,color:c.text}},s.time.split('–')[0]), this.E('div',{style:{fontSize:11,color:c.sub}},'uur')),
+        this.D({flex:1}, this.E('div',{style:{fontWeight:700,fontSize:14,color:c.text}},s.label+' · '+s.time), this.E('div',{style:{fontSize:12.5,color:c.sub,marginTop:2,display:'flex',alignItems:'center',gap:5}},this.ic('pin',13),s.loc)),
+        full? this.pill('Vol — wachtlijst','#FBF1DC','#9A6B00') : this.pill('Nog '+s.left+' plekken','#E4F4E9',c.ok)); };
+    return this.D({}, this.E('h3',{style:{margin:'0 0 6px',fontSize:16,fontWeight:800,color:c.text}},'Kies leeftijdsgroep & tijd'),
+      this.E('p',{style:{margin:'0 0 14px',fontSize:13,color:c.sub}},'Live beschikbaarheid voor '+this.prog(e.program||'p1').short+'.'),
+      this.D({display:'flex',flexDirection:'column',gap:10}, slots.map(row)));
+  }
+  enrollStep3(){
+    const c=this.c; const e=this.state.enroll; const par=this.db.parentMain;
+    const kid=(pid)=>{ const p=this.player(pid); const on=e.child===pid&&!e.newChild;
+      return this.E('button',{key:pid,onClick:()=>this.setEnroll({child:pid,newChild:false}),style:{textAlign:'left',padding:'13px 15px',borderRadius:12,border:'2px solid '+(on?c.green:c.line),background:on?'#F3FAF4':'#fff',cursor:'pointer',display:'flex',alignItems:'center',gap:12,width:'100%'}},
+        this.av(p.name,38), this.D({flex:1}, this.E('div',{style:{fontWeight:700,fontSize:14,color:c.text}},p.name), this.E('div',{style:{fontSize:12.5,color:c.sub}},p.age+' jaar')), on?this.E('span',{style:{color:c.green,display:'flex'}},this.ic('check',20)):null); };
+    return this.D({}, this.E('h3',{style:{margin:'0 0 14px',fontSize:16,fontWeight:800,color:c.text}},'Voor welk kind?'),
+      this.D({display:'flex',flexDirection:'column',gap:10}, par.kids.map(kid),
+        this.E('button',{onClick:()=>this.setEnroll({newChild:true,child:null}),style:{textAlign:'left',padding:'13px 15px',borderRadius:12,border:'2px dashed '+(e.newChild?c.green:c.line),background:e.newChild?'#F3FAF4':'#fff',cursor:'pointer',display:'flex',alignItems:'center',gap:12}}, this.D({width:38,height:38,borderRadius:'50%',background:'#EEF1EE',color:c.green,display:'flex',alignItems:'center',justifyContent:'center'},this.ic('plus',20)), this.E('span',{style:{fontWeight:700,fontSize:14,color:c.text}},'Nieuw kind toevoegen')),
+        e.newChild? this.E('input',{value:e.newName,onChange:ev=>this.setEnroll({newName:ev.target.value}),placeholder:'Naam van het kind',style:{padding:'12px 14px',borderRadius:10,border:'1px solid '+c.line,fontSize:14,marginTop:2}}):null));
+  }
+  enrollStep4(){
+    const c=this.c; const e=this.state.enroll; const isNew=e.newChild;
+    const sizes=['104','116','128','140','152','164','170'];
+    return this.D({}, this.E('h3',{style:{margin:'0 0 14px',fontSize:16,fontWeight:800,color:c.text}},'Extra informatie'),
+      isNew? this.D({marginBottom:16,padding:14,background:'#F6FAF6',borderRadius:11,border:'1px solid '+c.line},
+        this.E('div',{style:{fontWeight:700,fontSize:13.5,color:c.text,marginBottom:4}},'Nike Kick trainingstenue'), this.E('div',{style:{fontSize:12.5,color:c.sub,marginBottom:10}},'Nieuwe spelers ontvangen een compleet tenue (trui, shirt, broekje, sokken). Kies de maat.'),
+        this.D({display:'flex',gap:8,flexWrap:'wrap'}, sizes.map(s=>this.E('button',{key:s,onClick:()=>this.setEnroll({size:s}),style:{padding:'9px 14px',borderRadius:9,border:'1px solid '+(e.size===s?c.green:c.line),background:e.size===s?'#EAF6EE':'#fff',color:e.size===s?c.green:c.text,fontWeight:700,fontSize:13,cursor:'pointer'}},'Maat '+s)))) : this.D({marginBottom:16,padding:'12px 14px',background:'#F6FAF6',borderRadius:11,fontSize:13,color:c.sub},'Terugkerend lid — geen nieuw tenue nodig.'),
+      this.D({display:'flex',flexDirection:'column',gap:14},
+        this.D({}, this.E('label',{style:{fontSize:12.5,fontWeight:700,color:c.text}},'Allergieën / aandachtspunten'), this.E('input',{value:e.allergies,onChange:ev=>this.setEnroll({allergies:ev.target.value}),placeholder:'Bijv. notenallergie, astma…',style:{width:'100%',marginTop:6,padding:'12px 14px',borderRadius:10,border:'1px solid '+c.line,fontSize:14}})),
+        this.D({}, this.E('label',{style:{fontSize:12.5,fontWeight:700,color:c.text}},'Doelstellingen (optioneel)'), this.E('textarea',{value:e.goals,onChange:ev=>this.setEnroll({goals:ev.target.value}),placeholder:'Waar wil je kind aan werken?',style:{width:'100%',marginTop:6,padding:'12px 14px',borderRadius:10,border:'1px solid '+c.line,fontSize:14,minHeight:70,resize:'vertical'}}))));
+  }
+  enrollStep5(){
+    const c=this.c; const e=this.state.enroll; const pr=this.prog(e.program||'p1');
+    const member=e.member; const price=member?pr.priceMember:pr.priceNew; const childName=e.newChild?(e.newName||'Nieuw kind'):(e.child?this.player(e.child).name:'—');
+    const line=(l,v,strong)=>this.D({display:'flex',justifyContent:'space-between',padding:'10px 0',borderTop:'1px solid '+c.line}, this.E('span',{style:{fontSize:13.5,color:strong?c.text:c.sub,fontWeight:strong?700:500}},l), this.E('span',{style:{fontSize:13.5,fontWeight:700,color:c.text}},v));
+    return this.D({}, this.E('h3',{style:{margin:'0 0 14px',fontSize:16,fontWeight:800,color:c.text}},'Betaaloverzicht'),
+      this.D({border:'1px solid '+c.line,borderRadius:12,padding:'4px 16px 14px'},
+        line('Programma',pr.short), line('Kind',childName), line('Tenuemaat',e.newChild?('Maat '+(e.size||'—')+' (Nike Kick)'):'n.v.t.'),
+        line(member?'Prijs terugkerend lid':'Prijs nieuw lid (incl. Nike tenue)','€'+pr.priceNew),
+        member? line('Loyaliteitskorting','−€'+(pr.priceNew-pr.priceMember)) : null,
+        this.D({display:'flex',justifyContent:'space-between',padding:'12px 0 2px',borderTop:'2px solid '+c.text,marginTop:4}, this.E('span',{style:{fontSize:15,fontWeight:800,color:c.text}},'Totaal'), this.E('span',{style:{fontSize:18,fontWeight:800,color:c.green}},'€'+price))),
+      member? this.D({marginTop:12,display:'inline-flex',alignItems:'center',gap:8}, this.pill('Lid sinds 2024','#EAF6EE',c.green), this.E('span',{style:{fontSize:12.5,color:c.sub}},'Loyaliteitskorting automatisch toegepast')):null,
+      this.D({marginTop:14}, this.E('label',{style:{display:'inline-flex',alignItems:'center',gap:9,fontSize:13,color:c.text,cursor:'pointer'}}, this.E('input',{type:'checkbox',checked:member,onChange:ev=>this.setEnroll({member:ev.target.checked})}),'Ik ben al lid van Team Kick (−€'+(pr.priceNew-pr.priceMember)+')')));
+  }
+  enrollStep6(){
+    const c=this.c; const e=this.state.enroll;
+    if(e.bank) return this.bankScreen();
+    const pr=this.prog(e.program||'p1'); const price=e.member?pr.priceMember:pr.priceNew;
+    const banks=['ABN AMRO','ING','Rabobank','bunq','ASN Bank','SNS'];
+    return this.D({}, this.E('h3',{style:{margin:'0 0 6px',fontSize:16,fontWeight:800,color:c.text}},'Betalen met iDEAL'),
+      this.E('p',{style:{margin:'0 0 16px',fontSize:13.5,color:c.sub}},'Te betalen: ',this.E('strong',{style:{color:c.text}},'€'+price),'. Kies je bank.'),
+      this.D({display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(120px,1fr))',gap:10,marginBottom:18}, banks.map(b=>this.E('button',{key:b,onClick:()=>this.startBank(),style:{padding:'14px',borderRadius:11,border:'1px solid '+c.line,background:'#fff',fontWeight:700,fontSize:13.5,color:c.text,cursor:'pointer'}},b))),
+      this.D({display:'flex',justifyContent:'space-between',gap:10}, this.btn('Terug',()=>this.setEnroll({step:5}),'ghost'),
+        this.btn('Betaal €'+price+' met iDEAL',()=>this.startBank(),'green')));
+  }
+  startBank(){ this.setEnroll({bank:true,paying:true}); setTimeout(()=>{ this.setEnroll({paying:false,bank:false,done:true}); }, 2200); }
+  bankScreen(){
+    const c=this.c; const pr=this.prog(this.state.enroll.program||'p1'); const price=this.state.enroll.member?pr.priceMember:pr.priceNew;
+    return this.D({}, this.D({maxWidth:380,margin:'10px auto',border:'1px solid '+c.line,borderRadius:14,overflow:'hidden',boxShadow:'0 10px 30px rgba(0,0,0,.08)'},
+      this.D({padding:'14px 18px',background:'#EC0A0A',color:'#fff',display:'flex',alignItems:'center',justifyContent:'space-between'}, this.E('span',{style:{fontWeight:800,fontSize:15}},'iDEAL'), this.E('span',{style:{fontSize:12,opacity:.9}},'Beveiligde betaling')),
+      this.D({padding:'30px 22px',textAlign:'center'},
+        this.D({width:48,height:48,margin:'0 auto 16px',border:'4px solid #EEF1EE',borderTopColor:c.green,borderRadius:'50%',animation:'kspin .8s linear infinite'}),
+        this.E('div',{style:{fontWeight:700,fontSize:15,color:c.text}},'Bezig met betalen…'),
+        this.E('div',{style:{fontSize:13,color:c.sub,marginTop:6}},'Je wordt doorgestuurd naar je bank voor €'+price+'.'),
+        this.E('div',{style:{fontSize:12,color:c.sub,marginTop:14}},'Mollie · Voetbalschool KICK'))));
+  }
+  enrollSuccess(){
+    const c=this.c; const e=this.state.enroll; const pr=this.prog(e.program||'p1'); const childName=e.newChild?(e.newName||'Nieuw kind'):(e.child?this.player(e.child).name:'je kind');
+    const conf=this.D({position:'absolute',inset:0,overflow:'hidden',pointerEvents:'none'}, Array.from({length:40}).map((_,i)=>{ const cols=[c.green,c.lime,c.amber,c.blue,'#fff']; const left=(i*2.5+ (i*37%10))%100; const dur=2.4+ (i%5)*0.4; const delay=(i%10)*0.12;
+      return this.D({key:i,position:'absolute',top:-20,left:left+'%',width:8,height:13,background:cols[i%cols.length],borderRadius:2,transform:'rotate('+(i*40)+'deg)',animation:'kconf '+dur+'s linear '+delay+'s infinite'}); }));
+    return this.D({position:'relative',minHeight:'60vh'}, conf,
+      this.D({position:'relative',maxWidth:520,margin:'0 auto',textAlign:'center',paddingTop:20},
+        this.D({width:74,height:74,margin:'0 auto 18px',borderRadius:'50%',background:c.green,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',animation:'kpop .4s ease'},this.ic('check',38)),
+        this.E('h1',{style:{margin:0,fontSize:26,fontWeight:800,color:c.text}},'Inschrijving gelukt! 🎉'),
+        this.E('p',{style:{margin:'10px 0 0',fontSize:15,color:c.sub,lineHeight:1.6}}, childName+' is ingeschreven voor de '+pr.short+'. De betaling is gelukt en je ontvangt een bevestiging per e-mail.'),
+        this.card({textAlign:'left',marginTop:22},
+          this.D({display:'flex',alignItems:'center',gap:10,paddingBottom:12,borderBottom:'1px solid '+c.line,marginBottom:12}, this.av('KICK',34,c.green), this.D({}, this.E('div',{style:{fontWeight:700,fontSize:13.5,color:c.text}},'Bevestiging inschrijving'), this.E('div',{style:{fontSize:12,color:c.sub}},'info@voetbalschoolkick.nl → '+this.db.parentMain.email))),
+          this.E('div',{style:{fontSize:13.5,color:c.text,lineHeight:1.6}},'Beste Sandra, de inschrijving van '+childName+' voor de '+pr.short+' is bevestigd. We zien jullie graag bij de eerste training. Sportieve groet, Team KICK.')),
+        this.D({display:'flex',gap:10,justifyContent:'center',marginTop:20},
+          this.btn('Naar mijn overzicht',()=>{ this.setState({parentView:'overzicht',enroll:{step:1,program:null,slot:null,child:null,newChild:false,newName:'',size:'',allergies:'',goals:'',member:true,paying:false,bank:false,done:false}}); },'green'),
+          this.btn('Factuur (PDF)',()=>this.setToast('Factuur gedownload (gesimuleerd)'),'ghost'))));
+  }
+
+  pKinderen(){
+    const c=this.c; const par=this.db.parentMain;
+    const row=(pid)=>{ const p=this.player(pid);
+      return this.card({key:pid,display:'flex',flexDirection:'column',gap:12},
+        this.D({display:'flex',alignItems:'center',gap:13}, this.av(p.name,46), this.D({flex:1}, this.E('div',{style:{fontWeight:800,fontSize:16,color:c.text}},p.name), this.E('div',{style:{fontSize:13,color:c.sub}},p.age+' jaar · '+p.club+' · maat '+p.size))),
+        this.D({display:'grid',gridTemplateColumns:'1fr 1fr',gap:10},
+          this.D({background:c.paper,borderRadius:10,padding:12}, this.E('div',{style:{fontSize:11.5,color:c.sub,fontWeight:700,textTransform:'uppercase'}},'Huidige cursus'), this.E('div',{style:{fontSize:13.5,fontWeight:700,color:c.text,marginTop:3}},this.prog(p.course).short)),
+          this.D({background:c.paper,borderRadius:10,padding:12}, this.E('div',{style:{fontSize:11.5,color:c.sub,fontWeight:700,textTransform:'uppercase'}},'Aanwezigheid'), this.E('div',{style:{fontSize:13.5,fontWeight:700,color:c.text,marginTop:3}},p.att+'%'))),
+        this.D({display:'flex',gap:8,flexWrap:'wrap'}, this.btn('Certificaten',()=>this.setToast('Certificaat gedownload (PDF)'),'ghost',{flex:1}), this.btn('Foto-album',()=>this.setToast('Foto-album geopend'),'ghost',{flex:1}), this.btn('Historie',()=>this.setToast('Historie bekeken'),'subtle',{flex:1}))); };
+    return this.D({}, this.E('h1',{style:{margin:'0 0 4px',fontSize:24,fontWeight:800,color:c.text}},'Mijn kinderen'), this.E('p',{style:{margin:'0 0 20px',color:c.sub,fontSize:14}},par.kids.length+' kinderen onder jouw account.'),
+      this.D({className:'kgrid-childs'}, par.kids.map(row)));
+  }
+  pBetalingen(){
+    const c=this.c; const par=this.db.parentMain; const kidNames=par.kids.map(k=>this.player(k).name);
+    const inv=this.db.invoices.filter(iv=>kidNames.includes(iv.pl));
+    const th=(t)=>this.E('th',{style:{textAlign:'left',padding:'11px 12px',fontSize:11.5,fontWeight:700,color:c.sub,textTransform:'uppercase'}},t);
+    const td=(ch)=>this.E('td',{style:{padding:'11px 12px',fontSize:13.5,color:c.text,borderTop:'1px solid '+c.line}},ch);
+    const open=inv.filter(i=>i.status!=='Betaald').reduce((a,i)=>a+i.amount,0);
+    return this.D({}, this.E('h1',{style:{margin:'0 0 4px',fontSize:24,fontWeight:800,color:c.text}},'Betalingen'), this.E('p',{style:{margin:'0 0 18px',color:c.sub,fontSize:14}},'Facturen en betaalstatus per kind.'),
+      open?this.card({display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16,background:'#FBF4E4',border:'1px solid #F0DFB8'}, this.D({}, this.E('div',{style:{fontWeight:700,fontSize:14,color:'#8A5B00'}},'€'+open+' openstaand'), this.E('div',{style:{fontSize:12.5,color:'#9A6B00',marginTop:2}},'Voldoe via iDEAL om plekken te behouden.')), this.btn('Betaal nu',()=>this.setToast('iDEAL-betaling gestart'),'green')):null,
+      this.card({padding:0,overflow:'hidden'}, this.D({overflowX:'auto'}, this.E('table',{style:{width:'100%',borderCollapse:'collapse',minWidth:520}},
+        this.E('thead',null,this.E('tr',{style:{background:c.paper}},th('Factuur'),th('Kind'),th('Bedrag'),th('Status'),th(''))),
+        this.E('tbody',null, inv.map(iv=>this.E('tr',{key:iv.id},td(iv.id),td(iv.pl),td('€'+iv.amount),td(this.payPill(iv.status)),td(this.E('button',{onClick:()=>this.setToast('Factuur '+iv.id+' gedownload'),style:{border:'1px solid '+c.line,background:'#fff',borderRadius:7,padding:'6px 11px',fontSize:12,fontWeight:700,color:c.text,cursor:'pointer',display:'inline-flex',gap:6,alignItems:'center'}},this.ic('doc',14),'PDF'))))) ))));
+  }
+  pBerichten(){
+    const c=this.c; const tagcol={Bevestiging:['#E4F4E9',c.ok],Herinnering:['#E8F0FB',c.blue],Afgelast:['#FBE7E7',c.red],Certificaat:['#F3ECFB',c.purple]};
+    const row=(m)=>{ const tc=tagcol[m.tag]||['#EEF1EE',c.sub];
+      return this.E('button',{key:m.id,onClick:()=>this.setToast('Bericht geopend'),style:{textAlign:'left',display:'flex',gap:13,padding:'14px 16px',border:'1px solid '+c.line,borderRadius:12,background:m.unread?'#F6FAF6':'#fff',cursor:'pointer',alignItems:'flex-start'}},
+        this.D({width:9,height:9,borderRadius:'50%',background:m.unread?c.green:'transparent',flex:'none',marginTop:6}),
+        this.D({flex:1,minWidth:0}, this.D({display:'flex',justifyContent:'space-between',gap:10,alignItems:'center',marginBottom:4}, this.E('span',{style:{fontWeight:m.unread?800:600,fontSize:14,color:c.text}},m.subj), this.E('span',{style:{fontSize:11.5,color:c.sub,whiteSpace:'nowrap'}},m.when)), this.E('div',{style:{fontSize:13,color:c.sub,lineHeight:1.45,overflow:'hidden',textOverflow:'ellipsis'}},m.prev), this.D({marginTop:8},this.pill(m.tag,tc[0],tc[1]))) ); };
+    return this.D({}, this.E('h1',{style:{margin:'0 0 4px',fontSize:24,fontWeight:800,color:c.text}},'Berichten'), this.E('p',{style:{margin:'0 0 18px',color:c.sub,fontSize:14}},'Updates van Voetbalschool KICK.'),
+      this.D({display:'flex',flexDirection:'column',gap:10}, this.db.messages.map(row)));
+  }
+
+  // ---- modals ----
+  renderModal(){
+    const c=this.c; const m=this.state.modal;
+    const close=()=>this.setState({modal:null});
+    let inner;
+    if(m==='newEnroll') inner=this.D({}, this.E('h3',{style:{margin:'0 0 4px',fontSize:18,fontWeight:800,color:c.text}},'Nieuwe inschrijving'), this.E('p',{style:{margin:'0 0 16px',fontSize:13.5,color:c.sub}},'Snel een speler toevoegen (walk-in).'),
+      this.D({display:'flex',flexDirection:'column',gap:12},
+        this.modalField('Naam speler','Bijv. Tijn Vermeer'), this.modalField('Leeftijd','9'),
+        this.D({}, this.E('label',{style:{fontSize:12.5,fontWeight:700,color:c.text}},'Programma'), this.E('select',{style:{width:'100%',marginTop:6,padding:'11px',borderRadius:9,border:'1px solid '+c.line,fontSize:14}}, Object.keys(this.db.programs).map(p=>this.E('option',{key:p},this.prog(p).short)))),
+        this.D({display:'flex',gap:10,marginTop:6}, this.btn('Annuleren',close,'ghost',{flex:1}), this.btn('Inschrijven',()=>{close();this.setToast('Speler ingeschreven');},'green',{flex:1}))));
+    else inner=this.D({}, this.E('h3',{style:{margin:'0 0 4px',fontSize:18,fontWeight:800,color:c.text}},'Nieuwe cursus'), this.E('p',{style:{margin:'0 0 16px',fontSize:13.5,color:c.sub}},'Start een nieuw programma of camp.'),
+      this.D({display:'flex',flexDirection:'column',gap:12}, this.modalField('Naam cursus','Bijv. Techniekcursus Voorjaar 2027'), this.D({display:'flex',gap:10}, this.D({flex:1},this.modalField('Prijs nieuw','€145')), this.D({flex:1},this.modalField('Prijs lid','€120'))), this.modalField('Capaciteit','15'),
+        this.D({display:'flex',gap:10,marginTop:6}, this.btn('Annuleren',close,'ghost',{flex:1}), this.btn('Aanmaken',()=>{close();this.setToast('Cursus aangemaakt');},'green',{flex:1}))));
+    return this.D({position:'fixed',inset:0,zIndex:3000,display:'flex',alignItems:'center',justifyContent:'center',padding:18},
+      this.D({position:'absolute',inset:0,background:'rgba(10,12,10,.45)',animation:'kfade .2s ease',onClick:close}),
+      this.D({position:'relative',background:'#fff',borderRadius:16,padding:24,width:'min(440px,100%)',boxShadow:'0 24px 60px rgba(0,0,0,.25)',animation:'kpop .25s ease'}, inner));
+  }
+  modalField(l,ph){ const c=this.c; return this.D({}, this.E('label',{style:{fontSize:12.5,fontWeight:700,color:c.text}},l), this.E('input',{placeholder:ph,style:{width:'100%',marginTop:6,padding:'11px 13px',borderRadius:9,border:'1px solid '+c.line,fontSize:14}})); }
+
+    render(){ return this.renderApp(); }
+}
+
+if(!location.hash||!location.hash.startsWith('#/app')){location.hash='#/app/inloggen';}
+const _root=ReactDOM.createRoot(document.getElementById('root'));
+_root.render(React.createElement(KickApp));
+</script>
+</body>
+</html>
