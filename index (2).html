@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voetbalschool KICK | Regio Den Haag</title>
+  <meta name="description" content="Voetbalschool KICK biedt techniekcursussen, soccer camps, privé- en duotrainingen en talentprogramma's voor jeugdspelers van 5 t/m 14 jaar in de regio Den Haag.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent: #B4FF39; }
+    *, *::before, *::after { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #ffffff; color: #111111; font-family: Manrope, system-ui, sans-serif; }
+    ::selection { background: #B4FF39; color: #0A0A0A; }
+    a { color: inherit; }
+    section[id], footer[id] { scroll-margin-top: 74px; }
+
+    .nav-burger { display: none; }
+    @media (max-width: 920px) {
+      .nav-links { display: none !important; }
+      .nav-burger { display: flex !important; }
+    }
+
+    @keyframes kickFloat {
+      0%, 100% { transform: translateY(0); opacity: .9; }
+      50% { transform: translateY(8px); opacity: .45; }
+    }
+
+    .kick-link { position: relative; }
+    .kick-link::after { content: ""; position: absolute; left: 0; bottom: -6px; height: 2px; width: 0; background: var(--accent); transition: width .3s ease; }
+    .kick-link:hover::after { width: 100%; }
+
+    .nav-cta:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .hero-btn-primary:hover { filter: brightness(1.07); transform: translateY(-2px); }
+    .hero-btn-secondary:hover { border-color: #fff !important; background: rgba(255,255,255,.1) !important; }
+    .program-card:hover { border-color: #0B6E2C !important; }
+    .method-card:hover { border-color: #0B6E2C !important; }
+    .team-card:hover { border-color: rgba(180,255,57,.5) !important; background: rgba(255,255,255,.07) !important; }
+    .news-card:hover { border-color: #0B6E2C !important; }
+    .cta-btn-primary:hover { filter: brightness(1.07); transform: translateY(-2px); }
+    .cta-btn-secondary:hover { border-color: #fff !important; background: rgba(255,255,255,.1) !important; }
+
+    @media (max-width: 560px) {
+      .hero-cta { width: 100%; }
+      .hero-cta a { flex: 1; text-align: center; padding: 12px 16px !important; font-size: 13px !important; }
+      .cta-btns { flex-direction: column; }
+      .cta-btns a { width: 100%; text-align: center; }
+    }
+
+    .swipe-row { display: grid; gap: 18px; }
+    @media (max-width: 720px) {
+      .swipe-row { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; padding-bottom: 10px; gap: 14px !important; margin-left: -18px !important; margin-right: -18px !important; padding-left: 18px !important; padding-right: 18px !important; }
+      .swipe-row::-webkit-scrollbar { display: none; }
+      .swipe-row > * { flex: 0 0 82vw !important; max-width: 310px !important; scroll-snap-align: start; }
+      .swipe-row.team-row > * { flex: 0 0 68vw !important; max-width: 240px !important; }
+      .swipe-row.stats-row > * { flex: 0 0 52vw !important; max-width: 190px !important; }
+      .swipe-row.reviews-row { gap: 12px !important; }
+      .swipe-row.reviews-row > * { flex: 0 0 86vw !important; max-width: 320px !important; }
+      .swipe-row.reviews-row figure { padding: 20px !important; }
+      .swipe-row.reviews-row blockquote { font-size: 14px !important; }
+    }
+  </style>
+</head>
+<body>
+<div id="top" style="background:#ffffff;overflow-x:hidden;">
+
+  <!-- NAV -->
+  <nav id="kick-nav" style="position:fixed;top:0;left:0;right:0;z-index:120;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px clamp(18px,5vw,64px);transition:background .35s ease,padding .35s ease,border-bottom .35s ease;">
+    <a href="#top" style="display:flex;align-items:center;text-decoration:none;">
+      <img id="kick-logo" src="data:image/png;base64,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" alt="Voetbalschool KICK" style="height:34px;transition:filter .3s ease;filter:brightness(0) invert(1);">
+    </a>
+    <div class="nav-links" style="display:flex;align-items:center;gap:32px;">
+      <a class="kick-link navtxt" href="#programmas" style="text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#fff;transition:color .3s ease;">Programma's</a>
+      <a class="kick-link navtxt" href="#trainers" style="text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#fff;transition:color .3s ease;">Trainers</a>
+      <a class="kick-link navtxt" href="#camps" style="text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#fff;transition:color .3s ease;">Camps</a>
+      <a class="kick-link navtxt" href="#over" style="text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#fff;transition:color .3s ease;">Over KICK</a>
+      <a class="kick-link navtxt" href="#contact" style="text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#fff;transition:color .3s ease;">Contact</a>
+      <a href="#inschrijven" class="nav-cta" style="text-decoration:none;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#0A0A0A;background:var(--accent);padding:11px 22px;border-radius:3px;transition:transform .2s ease,filter .2s ease;">Inschrijven</a>
+    </div>
+    <button class="nav-burger" id="nav-burger-btn" style="flex-direction:column;justify-content:center;gap:5px;width:46px;height:46px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.32);border-radius:6px;cursor:pointer;padding:0 12px;">
+      <span class="navline" style="height:2px;background:#fff;border-radius:2px;display:block;transition:background .3s ease;"></span>
+      <span class="navline" style="height:2px;background:#fff;border-radius:2px;display:block;transition:background .3s ease;"></span>
+      <span style="height:2px;background:var(--accent);border-radius:2px;display:block;"></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div id="mobile-menu" style="display:none;position:fixed;inset:0;z-index:200;background:#ffffff;flex-direction:column;padding:22px clamp(20px,6vw,40px);">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <img src="data:image/png;base64,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" alt="Voetbalschool KICK" style="height:30px;">
+      <button id="close-menu-btn" style="width:46px;height:46px;background:#f2f2ee;border:1px solid rgba(0,0,0,.12);border-radius:6px;color:#111;font-size:22px;cursor:pointer;line-height:1;">&#x2715;</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-top:40px;">
+      <a class="close-menu" href="#programmas" style="text-decoration:none;font-family:Anton,sans-serif;font-size:clamp(34px,11vw,46px);text-transform:uppercase;color:#111;line-height:1.1;">Programma's</a>
+      <a class="close-menu" href="#trainers" style="text-decoration:none;font-family:Anton,sans-serif;font-size:clamp(34px,11vw,46px);text-transform:uppercase;color:#111;line-height:1.1;">Trainers</a>
+      <a class="close-menu" href="#camps" style="text-decoration:none;font-family:Anton,sans-serif;font-size:clamp(34px,11vw,46px);text-transform:uppercase;color:#111;line-height:1.1;">Camps</a>
+      <a class="close-menu" href="#over" style="text-decoration:none;font-family:Anton,sans-serif;font-size:clamp(34px,11vw,46px);text-transform:uppercase;color:#111;line-height:1.1;">Over KICK</a>
+      <a class="close-menu" href="#contact" style="text-decoration:none;font-family:Anton,sans-serif;font-size:clamp(34px,11vw,46px);text-transform:uppercase;color:#111;line-height:1.1;">Contact</a>
+    </div>
+    <a class="close-menu" href="#inschrijven" style="margin-top:auto;text-align:center;text-decoration:none;font-family:Oswald,sans-serif;font-size:18px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#0A0A0A;background:var(--accent);padding:18px;border-radius:4px;">Schrijf je in</a>
+  </div>
+
+  <!-- HERO -->
+  <header style="position:relative;width:100%;height:100vh;min-height:600px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;">
+    <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=2000&auto=format&fit=crop" alt="Jeugdvoetbal onder de lichtmasten" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+    <div id="kick-grain" style="position:absolute;inset:0;pointer-events:none;opacity:.4;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.5%22/></svg>');mix-blend-mode:overlay;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(5,22,11,.94) 0%, rgba(5,22,11,.55) 42%, rgba(5,22,11,.22) 74%, rgba(5,22,11,.5) 100%);"></div>
+
+    <div style="position:relative;z-index:5;padding:0 clamp(18px,5vw,64px) clamp(26px,4vw,52px);max-width:1320px;margin:0 auto;width:100%;">
+      <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;">
+        <span style="width:28px;height:2px;background:var(--accent);"></span>
+        <span style="font-family:Oswald,sans-serif;font-size:clamp(11px,1.4vw,13px);font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--accent);">Voetbalschool · Regio Den Haag · Sinds 2017</span>
+      </div>
+      <h1 style="margin:0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(50px,11.5vw,164px);line-height:.86;letter-spacing:.5px;text-transform:uppercase;color:#fff;max-width:13ch;">Waar talent <span style="color:var(--accent);">groeit</span></h1>
+      <p style="margin:22px 0 0;font-size:clamp(15px,1.5vw,20px);font-weight:500;line-height:1.5;color:rgba(255,255,255,.9);max-width:52ch;">Plezier en prestatie, getraind door BVO-trainers. De voetbalschool in de regio Den Haag, gebouwd op vier pijlers: <strong style="color:#fff;">Kracht · Inzicht · Coördinatie · Kwaliteit.</strong></p>
+      <div class="hero-cta" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;">
+        <a href="#inschrijven" class="hero-btn-primary" style="text-decoration:none;font-family:Oswald,sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#0A0A0A;background:var(--accent);padding:16px 32px;border-radius:4px;transition:transform .2s ease,filter .2s ease;">Schrijf je in</a>
+        <a href="#programmas" class="hero-btn-secondary" style="text-decoration:none;font-family:Oswald,sans-serif;font-size:15px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;background:transparent;border:1.5px solid rgba(255,255,255,.55);padding:14.5px 30px;border-radius:4px;transition:border-color .2s ease,background .2s ease;">Bekijk programma's</a>
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:5;border-top:1px solid rgba(255,255,255,.18);background:rgba(5,18,10,.45);">
+      <div style="max-width:1320px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px clamp(20px,5vw,72px);padding:15px clamp(18px,5vw,64px);">
+        <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:Anton,sans-serif;font-size:18px;color:var(--accent);">100%</span><span style="font-family:Oswald,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85);">BVO-trainers</span></div>
+        <span style="width:1px;height:18px;background:rgba(255,255,255,.22);"></span>
+        <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:Anton,sans-serif;font-size:18px;color:var(--accent);">2</span><span style="font-family:Oswald,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85);">Locaties</span></div>
+        <span style="width:1px;height:18px;background:rgba(255,255,255,.22);"></span>
+        <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:Anton,sans-serif;font-size:18px;color:var(--accent);">5-14</span><span style="font-family:Oswald,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85);">Jaar</span></div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);">
+          <span style="font-family:Oswald,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;">Scroll</span>
+          <span style="display:inline-block;font-size:14px;animation:kickFloat 1.8s ease-in-out infinite;">&#x2193;</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- OVER KICK -->
+  <section id="over" style="padding:clamp(64px,9vw,140px) clamp(18px,5vw,64px);background:#ffffff;">
+    <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(32px,5vw,72px);align-items:center;">
+      <div data-reveal>
+        <span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E2C;">Over KICK</span>
+        <h2 style="margin:16px 0 0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(32px,4.6vw,68px);line-height:.98;text-transform:uppercase;color:#111;">Je gaat het pas zien als je het doorhebt.</h2>
+        <p style="margin:24px 0 0;font-size:17px;line-height:1.7;color:#454545;max-width:52ch;">Voetbalschool KICK begon in 2017 bij SV Loosduinen, in kleine groepjes van vijf spelers. Inmiddels is KICK uitgegroeid tot een serieuze voetbalschool met techniektrainingen, soccer camps, privé- en duotrainingen en een Talentenplan op zondag, voor jongens en meiden van 5 t/m 14 jaar.</p>
+        <p style="margin:16px 0 0;font-size:17px;line-height:1.7;color:#454545;max-width:52ch;">Onze filosofie is simpel: <strong style="color:#111;">plezier en prestatie</strong>. Geen amateurgevoel, maar de methodiek en het tempo van het betaald voetbal. Al onze trainers werken bij een BVO.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:18px 24px;margin-top:30px;">
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#222;"><span style="width:6px;height:6px;background:#0B6E2C;border-radius:2px;flex-shrink:0;"></span>ADO Den Haag</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#222;"><span style="width:6px;height:6px;background:#0B6E2C;border-radius:2px;flex-shrink:0;"></span>Sparta Rotterdam</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#222;"><span style="width:6px;height:6px;background:#0B6E2C;border-radius:2px;flex-shrink:0;"></span>Excelsior</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#222;"><span style="width:6px;height:6px;background:#0B6E2C;border-radius:2px;flex-shrink:0;"></span>Jong Oranje</span>
+        </div>
+      </div>
+      <div data-reveal data-reveal-delay="120" style="position:relative;aspect-ratio:4/5;border-radius:8px;overflow:hidden;border:1px solid #E5E5E5;">
+        <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1100&auto=format&fit=crop" alt="Close-up van voetwerk met de bal" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(5,22,11,.5), rgba(5,22,11,0) 55%);"></div>
+        <div style="position:absolute;left:20px;bottom:20px;background:var(--accent);color:#0A0A0A;font-family:Oswald,sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:12px;padding:8px 14px;border-radius:3px;">Hoofdlocatie · VV Verburch</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DE KICK-METHODE -->
+  <section id="methode" style="padding:clamp(64px,9vw,140px) clamp(18px,5vw,64px);background:#f4f4f0;">
+    <div style="max-width:1320px;margin:0 auto;">
+      <div data-reveal style="max-width:680px;">
+        <span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E2C;">De methode</span>
+        <h2 style="margin:16px 0 0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(32px,4.6vw,64px);line-height:.98;text-transform:uppercase;color:#111;">Vier pijlers. Eén woord: KICK.</h2>
+        <p style="margin:18px 0 0;font-size:17px;line-height:1.7;color:#454545;">Elke training bouwt op dezelfde fundamenten. Samen vormen ze de complete speler.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:44px;">
+        <div data-reveal data-reveal-delay="0" class="method-card" style="padding:30px 26px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;transition:border-color .3s ease;">
+          <span style="font-family:Anton,sans-serif;font-size:60px;line-height:1;color:#0B6E2C;display:block;">K</span>
+          <h3 style="margin:14px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:1px;text-transform:uppercase;color:#111;">Kracht</h3>
+          <p style="margin:10px 0 0;font-size:15px;line-height:1.6;color:#555;">Explosiviteit, balans en lichaamskracht, de fysieke basis voor elk duel en elke sprint.</p>
+        </div>
+        <div data-reveal data-reveal-delay="90" class="method-card" style="padding:30px 26px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;transition:border-color .3s ease;">
+          <span style="font-family:Anton,sans-serif;font-size:60px;line-height:1;color:#0B6E2C;display:block;">I</span>
+          <h3 style="margin:14px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:1px;text-transform:uppercase;color:#111;">Inzicht</h3>
+          <p style="margin:10px 0 0;font-size:15px;line-height:1.6;color:#555;">Spelinzicht en keuzes onder druk. Leren lezen wat het veld op dat moment vraagt.</p>
+        </div>
+        <div data-reveal data-reveal-delay="180" class="method-card" style="padding:30px 26px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;transition:border-color .3s ease;">
+          <span style="font-family:Anton,sans-serif;font-size:60px;line-height:1;color:#0B6E2C;display:block;">C</span>
+          <h3 style="margin:14px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:1px;text-transform:uppercase;color:#111;">Coördinatie</h3>
+          <p style="margin:10px 0 0;font-size:15px;line-height:1.6;color:#555;">Balgevoel, voetwerk en lichaamscontrole. De fijne motoriek van de techniek.</p>
+        </div>
+        <div data-reveal data-reveal-delay="270" class="method-card" style="padding:30px 26px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;transition:border-color .3s ease;">
+          <span style="font-family:Anton,sans-serif;font-size:60px;line-height:1;color:#0B6E2C;display:block;">K</span>
+          <h3 style="margin:14px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:1px;text-transform:uppercase;color:#111;">Kwaliteit</h3>
+          <p style="margin:10px 0 0;font-size:15px;line-height:1.6;color:#555;">Afwerking, precisie en mentaliteit. Het verschil tussen goed en uitblinken.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAMMA'S -->
+  <section id="programmas" style="padding:clamp(64px,9vw,140px) clamp(18px,5vw,64px);background:#ffffff;">
+    <div style="max-width:1320px;margin:0 auto;">
+      <div data-reveal style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px;">
+        <div style="max-width:620px;">
+          <span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E2C;">Programma's</span>
+          <h2 style="margin:16px 0 0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(32px,4.6vw,64px);line-height:.98;text-transform:uppercase;color:#111;">Kies jouw weg vooruit</h2>
+        </div>
+        <a href="mailto:info@voetbalschoolkick.nl" style="text-decoration:none;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#0A0A0A;background:var(--accent);padding:13px 24px;border-radius:4px;">Direct inschrijven</a>
+      </div>
+
+      <div id="camps" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:44px;">
+        <a data-reveal href="mailto:info@voetbalschoolkick.nl" class="program-card" style="text-decoration:none;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .3s ease;">
+          <div style="position:relative;aspect-ratio:16/10;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1551958219-acbc608c6377?q=80&w=900&auto=format&fit=crop" alt="Techniektraining met ballen" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(5,22,11,.5), rgba(5,22,11,0) 60%);"></div>
+            <span style="position:absolute;top:14px;left:14px;background:rgba(5,18,10,.8);color:var(--accent);font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:6px 11px;border-radius:3px;">Cursus · &euro;150</span>
+          </div>
+          <div style="padding:24px 24px 28px;display:flex;flex-direction:column;flex:1;">
+            <h3 style="margin:0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:.5px;text-transform:uppercase;color:#111;">10-weekse techniekcursus</h3>
+            <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#555;flex:1;">Tien weken techniek op je eigen niveau. Inclusief Nike trainingstenue, certificaat met persoonlijke foto en medaille. Kans om gescout te worden voor het Talentenplan.</p>
+            <span style="margin-top:18px;display:inline-flex;align-items:center;gap:8px;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#0B6E2C;">Meer info &#x2192;</span>
+          </div>
+        </a>
+        <a data-reveal data-reveal-delay="90" href="mailto:info@voetbalschoolkick.nl" class="program-card" style="text-decoration:none;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .3s ease;">
+          <div style="position:relative;aspect-ratio:16/10;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1606925797300-0b35e9d1794e?q=80&w=900&auto=format&fit=crop" alt="Een-op-een dueltraining" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(5,22,11,.5), rgba(5,22,11,0) 60%);"></div>
+            <span style="position:absolute;top:14px;left:14px;background:rgba(5,18,10,.8);color:var(--accent);font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:6px 11px;border-radius:3px;">Prive en duo</span>
+          </div>
+          <div style="padding:24px 24px 28px;display:flex;flex-direction:column;flex:1;">
+            <h3 style="margin:0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:.5px;text-transform:uppercase;color:#111;">Prive- en duotrainingen</h3>
+            <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#555;flex:1;">Volledig persoonlijke aandacht, alleen of met z'n tweeën. Een trainingsplan op maat, doordeweeks op VV Verburch, met trainer Roy of een van de BVO-trainers.</p>
+            <span style="margin-top:18px;display:inline-flex;align-items:center;gap:8px;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#0B6E2C;">Meer info &#x2192;</span>
+          </div>
+        </a>
+        <a data-reveal data-reveal-delay="180" href="mailto:info@voetbalschoolkick.nl" class="program-card" style="text-decoration:none;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .3s ease;">
+          <div style="position:relative;aspect-ratio:16/10;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=900&auto=format&fit=crop" alt="Soccer camp met veel kinderen" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(5,22,11,.5), rgba(5,22,11,0) 60%);"></div>
+            <span style="position:absolute;top:14px;left:14px;background:rgba(5,18,10,.8);color:var(--accent);font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:6px 11px;border-radius:3px;">Camp · winter en zomer</span>
+          </div>
+          <div style="padding:24px 24px 28px;display:flex;flex-direction:column;flex:1;">
+            <h3 style="margin:0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:.5px;text-transform:uppercase;color:#111;">KICK Soccer Camps</h3>
+            <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#555;flex:1;">Vakantiedagen vol voetbal met tot wel 100 kinderen: 's ochtends intensieve techniektraining, 's middags een Champions League-toernooi met commentator, quiz en gatenbord schieten.</p>
+            <span style="margin-top:18px;display:inline-flex;align-items:center;gap:8px;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#0B6E2C;">Meer info &#x2192;</span>
+          </div>
+        </a>
+        <a data-reveal data-reveal-delay="270" href="mailto:info@voetbalschoolkick.nl" class="program-card" style="text-decoration:none;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .3s ease;">
+          <div style="position:relative;aspect-ratio:16/10;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=900&auto=format&fit=crop" alt="Spelerstunnel, profsfeer" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(5,22,11,.5), rgba(5,22,11,0) 60%);"></div>
+            <span style="position:absolute;top:14px;left:14px;background:rgba(5,18,10,.8);color:var(--accent);font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:6px 11px;border-radius:3px;">Talent · zondag</span>
+          </div>
+          <div style="padding:24px 24px 28px;display:flex;flex-direction:column;flex:1;">
+            <h3 style="margin:0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:.5px;text-transform:uppercase;color:#111;">Talentenplan en train-als-een-prof</h3>
+            <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#555;flex:1;">Voor de spelers die meer willen. Op zondag trainen in talententeams met de methodiek van een profacademie. Scouts van BVO's zijn regelmatig aanwezig.</p>
+            <span style="margin-top:18px;display:inline-flex;align-items:center;gap:8px;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#0B6E2C;">Meer info &#x2192;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAINERS -->
+  <section id="trainers" style="padding:clamp(64px,9vw,140px) clamp(18px,5vw,64px);background:#f4f4f0;">
+    <div style="max-width:1320px;margin:0 auto;">
+      <div data-reveal style="max-width:680px;">
+        <span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E2C;">Onze trainers</span>
+        <h2 style="margin:16px 0 0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(32px,4.6vw,64px);line-height:.98;text-transform:uppercase;color:#111;">Geleerd van de besten</h2>
+      </div>
+
+      <div data-reveal style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(24px,4vw,56px);align-items:center;margin-top:44px;padding:clamp(22px,3vw,40px);background:#fff;border:1px solid #E5E5E5;border-radius:8px;">
+        <div style="position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;max-width:420px;">
+          <img src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=800&auto=format&fit=crop" alt="Roy de Geus, hoofdtrainer" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(5,22,11,.4), rgba(5,22,11,0) 55%);"></div>
+        </div>
+        <div>
+          <span style="display:inline-block;background:var(--accent);color:#0A0A0A;font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;border-radius:3px;">Hoofdtrainer en oprichter</span>
+          <h3 style="margin:16px 0 0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(28px,3.4vw,48px);line-height:1;text-transform:uppercase;color:#111;">Roy de Geus</h3>
+          <p style="margin:16px 0 0;font-size:16px;line-height:1.7;color:#454545;max-width:54ch;">Hoofdtrainer bij ADO Den Haag en oprichter van KICK. Roy gaf eerder training bij Sparta Rotterdam, Vitesse Delft en Westlandia. Sinds 2017 bouwt hij aan een voetbalschool waar jonge spelers trainen op het niveau van het betaald voetbal, dichtbij huis, in de regio Den Haag.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;">
+            <span style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#222;border:1px solid rgba(0,0,0,.18);padding:7px 13px;border-radius:20px;">ADO Den Haag</span>
+            <span style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#222;border:1px solid rgba(0,0,0,.18);padding:7px 13px;border-radius:20px;">Sparta Rotterdam</span>
+            <span style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#222;border:1px solid rgba(0,0,0,.18);padding:7px 13px;border-radius:20px;">Vitesse Delft</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-reveal style="margin-top:18px;background:#0c2114;border-radius:8px;padding:clamp(28px,4vw,48px);">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;">
+          <h3 style="margin:0;font-family:Oswald,sans-serif;font-weight:600;font-size:clamp(20px,2.4vw,28px);letter-spacing:.5px;text-transform:uppercase;color:#fff;">Het KICK-team</h3>
+          <p style="margin:0;font-size:14px;color:rgba(255,255,255,.65);max-width:46ch;">Stuk voor stuk gediplomeerd en actief bij een Betaald Voetbal Organisatie.</p>
+        </div>
+        <div class="swipe-row team-row" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:28px;">
+          <div class="team-card" style="padding:24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;transition:border-color .3s ease,background .3s ease;">
+            <span style="font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);">BVO-trainer</span>
+            <h4 style="margin:10px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:19px;text-transform:uppercase;color:#fff;">Techniektraining</h4>
+            <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,.65);">Balbeheersing, dribbel en afwerking in kleine groepen op niveau.</p>
+          </div>
+          <div class="team-card" style="padding:24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;transition:border-color .3s ease,background .3s ease;">
+            <span style="font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);">BVO-trainer</span>
+            <h4 style="margin:10px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:19px;text-transform:uppercase;color:#fff;">Keeperstraining</h4>
+            <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,.65);">Specialistische keeperstraining tijdens de 10-weekse cursus.</p>
+          </div>
+          <div class="team-card" style="padding:24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;transition:border-color .3s ease,background .3s ease;">
+            <span style="font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);">BVO-trainer</span>
+            <h4 style="margin:10px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:19px;text-transform:uppercase;color:#fff;">Athletiek en coordinatie</h4>
+            <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,.65);">Kracht, snelheid en bewegingsvaardigheid als fundament.</p>
+          </div>
+          <div class="team-card" style="padding:24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;transition:border-color .3s ease,background .3s ease;">
+            <span style="font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);">Talentenplan</span>
+            <h4 style="margin:10px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:19px;text-transform:uppercase;color:#fff;">Talentcoaching</h4>
+            <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,.65);">Begeleiding richting BVO-scouting, in samenwerking met Jong Oranje.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <section id="kick-stats" style="padding:clamp(52px,7vw,96px) clamp(18px,5vw,64px);background:#0B6E2C;">
+    <div class="swipe-row stats-row" style="max-width:1320px;margin:0 auto;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:28px;text-align:center;">
+      <div>
+        <div style="font-family:Anton,sans-serif;font-size:clamp(44px,7vw,86px);line-height:1;color:var(--accent);"><span id="stat-spelers">0</span><span style="color:#fff;">+</span></div>
+        <div style="margin-top:10px;font-family:Oswald,sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85);">Spelers opgeleid</div>
+      </div>
+      <div>
+        <div style="font-family:Anton,sans-serif;font-size:clamp(44px,7vw,86px);line-height:1;color:var(--accent);"><span id="stat-jaren">0</span><span style="color:#fff;">+</span></div>
+        <div style="margin-top:10px;font-family:Oswald,sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85);">Jaar ervaring</div>
+      </div>
+      <div>
+        <div style="font-family:Anton,sans-serif;font-size:clamp(44px,7vw,86px);line-height:1;color:var(--accent);"><span id="stat-kinderen">0</span></div>
+        <div style="margin-top:10px;font-family:Oswald,sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85);">Kinderen per soccer camp</div>
+      </div>
+      <div>
+        <div style="font-family:Anton,sans-serif;font-size:clamp(44px,7vw,86px);line-height:1;color:var(--accent);"><span id="stat-talenten">0</span><span style="color:#fff;">+</span></div>
+        <div style="margin-top:10px;font-family:Oswald,sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85);">Talenten naar een BVO</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATIES -->
+  <section id="locaties" style="padding:clamp(64px,9vw,140px) clamp(18px,5vw,64px);background:#ffffff;">
+    <div style="max-width:1320px;margin:0 auto;">
+      <div data-reveal style="max-width:680px;">
+        <span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E2C;">Locaties</span>
+        <h2 style="margin:16px 0 0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(32px,4.6vw,64px);line-height:.98;text-transform:uppercase;color:#111;">Twee velden, een ambitie</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:40px;">
+        <div data-reveal style="border:1px solid #E5E5E5;border-radius:10px;overflow:hidden;background:#fff;">
+          <div style="position:relative;aspect-ratio:16/9;overflow:hidden;">
+            <iframe title="VV Verburch op de kaart" src="https://www.openstreetmap.org/export/embed.html?bbox=4.1640%2C51.9930%2C4.1900%2C52.0060&layer=mapnik&marker=51.9995%2C4.1770" style="position:absolute;inset:0;width:100%;height:100%;border:0;filter:grayscale(.15);" loading="lazy"></iframe>
+          </div>
+          <div style="padding:24px;">
+            <h3 style="margin:0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:.5px;text-transform:uppercase;color:#111;">VV Verburch</h3>
+            <p style="margin:10px 0 0;font-size:15px;line-height:1.6;color:#555;">Julianaweg 1, 2685 BA Poeldijk · Hoofdlocatie</p>
+            <p style="margin:4px 0 0;font-size:14px;color:#888;">Techniektraining · prive en duo · soccer camps</p>
+          </div>
+        </div>
+        <div data-reveal data-reveal-delay="120" style="border:1px solid #E5E5E5;border-radius:10px;overflow:hidden;background:#fff;">
+          <div style="position:relative;aspect-ratio:16/9;overflow:hidden;">
+            <iframe title="SV Loosduinen op de kaart" src="https://www.openstreetmap.org/export/embed.html?bbox=4.2370%2C52.0540%2C4.2630%2C52.0670&layer=mapnik&marker=52.0605%2C4.2500" style="position:absolute;inset:0;width:100%;height:100%;border:0;filter:grayscale(.15);" loading="lazy"></iframe>
+          </div>
+          <div style="padding:24px;">
+            <h3 style="margin:0;font-family:Oswald,sans-serif;font-weight:600;font-size:22px;letter-spacing:.5px;text-transform:uppercase;color:#111;">SV Loosduinen</h3>
+            <p style="margin:10px 0 0;font-size:15px;line-height:1.6;color:#555;">Laan van Eik en Duinen 250, 2564 GN Den Haag</p>
+            <p style="margin:4px 0 0;font-size:14px;color:#888;">Waar het in 2017 allemaal begon</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section style="padding:clamp(64px,9vw,140px) clamp(18px,5vw,64px);background:#f4f4f0;">
+    <div style="max-width:1320px;margin:0 auto;">
+      <div data-reveal style="max-width:680px;">
+        <span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E2C;">Ervaringen</span>
+        <h2 style="margin:16px 0 0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(32px,4.6vw,64px);line-height:.98;text-transform:uppercase;color:#0A0A0A;">Wat ouders en spelers zeggen</h2>
+      </div>
+      <div class="swipe-row reviews-row" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:40px;">
+        <figure data-reveal style="margin:0;background:#fff;border:1px solid #E5E5E5;border-radius:10px;padding:30px;display:flex;flex-direction:column;">
+          <span style="font-family:Anton,sans-serif;font-size:46px;line-height:.6;color:#0B6E2C;">"</span>
+          <blockquote style="margin:14px 0 0;padding:0;font-size:17px;line-height:1.6;color:#1a1a1a;flex:1;border:none;">Mijn zoon is in een seizoen enorm gegroeid. De trainers zien precies waar het aan schort en maken er bovendien een feestje van.</blockquote>
+          <figcaption style="margin-top:20px;font-size:14px;color:#666;"><strong style="color:#0A0A0A;">Linda M.</strong>, moeder van Sem (9)</figcaption>
+        </figure>
+        <figure data-reveal data-reveal-delay="120" style="margin:0;background:#fff;border:1px solid #E5E5E5;border-radius:10px;padding:30px;display:flex;flex-direction:column;">
+          <span style="font-family:Anton,sans-serif;font-size:46px;line-height:.6;color:#0B6E2C;">"</span>
+          <blockquote style="margin:14px 0 0;padding:0;font-size:17px;line-height:1.6;color:#1a1a1a;flex:1;border:none;">Eindelijk een voetbalschool die echt op profniveau werkt. Serieus en gestructureerd, maar met heel veel plezier voor de kinderen.</blockquote>
+          <figcaption style="margin-top:20px;font-size:14px;color:#666;"><strong style="color:#0A0A0A;">Patrick V.</strong>, vader van Tess (12)</figcaption>
+        </figure>
+        <figure data-reveal data-reveal-delay="240" style="margin:0;background:#fff;border:1px solid #E5E5E5;border-radius:10px;padding:30px;display:flex;flex-direction:column;">
+          <span style="font-family:Anton,sans-serif;font-size:46px;line-height:.6;color:#0B6E2C;">"</span>
+          <blockquote style="margin:14px 0 0;padding:0;font-size:17px;line-height:1.6;color:#1a1a1a;flex:1;border:none;">Op het Talentenplan ga ik er met de duo-trainingen lekker fel aan toe. Ik durf nu veel meer in de wedstrijd.</blockquote>
+          <figcaption style="margin-top:20px;font-size:14px;color:#666;"><strong style="color:#0A0A0A;">Lucas</strong>, speler (13)</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BLOK -->
+  <section id="inschrijven" style="position:relative;padding:clamp(72px,11vw,170px) clamp(18px,5vw,64px);overflow:hidden;text-align:center;">
+    <img src="https://images.unsplash.com/photo-1560272564-c83b66b1ad12?q=80&w=2000&auto=format&fit=crop" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(5,22,11,.93), rgba(5,22,11,.72));"></div>
+    <div data-reveal style="position:relative;z-index:5;max-width:820px;margin:0 auto;">
+      <h2 style="margin:0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(36px,6.5vw,92px);line-height:.92;text-transform:uppercase;color:#fff;">Klaar om jezelf te verbeteren?</h2>
+      <p style="margin:20px 0 0;font-size:18px;line-height:1.6;color:rgba(255,255,255,.9);">De cursussen zaten de afgelopen keren vol. Plaatsen zijn beperkt per groep. Schrijf je vandaag in en train mee op profniveau in de regio Den Haag.</p>
+      <div class="cta-btns" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:32px;">
+        <a href="mailto:info@voetbalschoolkick.nl" class="cta-btn-primary" style="text-decoration:none;font-family:Oswald,sans-serif;font-size:16px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#0A0A0A;background:var(--accent);padding:18px 40px;border-radius:4px;transition:transform .2s ease,filter .2s ease;">Schrijf je in</a>
+        <a href="mailto:info@voetbalschoolkick.nl" class="cta-btn-secondary" style="text-decoration:none;font-family:Oswald,sans-serif;font-size:16px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;border:1.5px solid rgba(255,255,255,.55);padding:16.5px 36px;border-radius:4px;transition:border-color .2s ease,background .2s ease;">Stel een vraag</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NIEUWS -->
+  <section style="padding:clamp(64px,9vw,140px) clamp(18px,5vw,64px);background:#ffffff;">
+    <div style="max-width:1320px;margin:0 auto;">
+      <div data-reveal style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;">
+        <div>
+          <span style="font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E2C;">Nieuws</span>
+          <h2 style="margin:16px 0 0;font-family:Anton,sans-serif;font-weight:400;font-size:clamp(32px,4.6vw,64px);line-height:.98;text-transform:uppercase;color:#111;">Laatste van KICK</h2>
+        </div>
+        <a class="kick-link" href="https://www.instagram.com/voetbalschoolkick" target="_blank" rel="noopener" style="text-decoration:none;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#111;">Volg @voetbalschoolkick &#x2192;</a>
+      </div>
+      <div class="swipe-row" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:40px;">
+        <a data-reveal href="https://www.voetbalschoolkick.nl" target="_blank" rel="noopener" class="news-card" style="text-decoration:none;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .3s ease;">
+          <div style="position:relative;aspect-ratio:16/10;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1459865264687-595d652de67e?q=80&w=800&auto=format&fit=crop" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div style="padding:22px;">
+            <span style="font-family:Oswald,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#0B6E2C;">Uitbreiding</span>
+            <h3 style="margin:8px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:20px;line-height:1.2;color:#111;">KICK breidt uit naar twee locaties</h3>
+            <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#666;">Naast hoofdlocatie VV Verburch is KICK ook actief bij SV Loosduinen. Twee velden, een ambitie.</p>
+          </div>
+        </a>
+        <a data-reveal data-reveal-delay="120" href="https://www.voetbalschoolkick.nl" target="_blank" rel="noopener" class="news-card" style="text-decoration:none;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .3s ease;">
+          <div style="position:relative;aspect-ratio:16/10;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=800&auto=format&fit=crop" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div style="padding:22px;">
+            <span style="font-family:Oswald,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#0B6E2C;">Talent</span>
+            <h3 style="margin:8px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:20px;line-height:1.2;color:#111;">KICK-talenten op stage bij Sparta, PSV en Feyenoord</h3>
+            <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#666;">Youssef en Mo bij Sparta Rotterdam, Talha bij PSV en Abdullah bij Feyenoord. De scouts zagen hun acties.</p>
+          </div>
+        </a>
+        <a data-reveal data-reveal-delay="240" href="https://www.voetbalschoolkick.nl" target="_blank" rel="noopener" class="news-card" style="text-decoration:none;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.08);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .3s ease;">
+          <div style="position:relative;aspect-ratio:16/10;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1552667466-07770ae110d0?q=80&w=800&auto=format&fit=crop" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div style="padding:22px;">
+            <span style="font-family:Oswald,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#0B6E2C;">Cursus</span>
+            <h3 style="margin:8px 0 0;font-family:Oswald,sans-serif;font-weight:600;font-size:20px;line-height:1.2;color:#111;">Nieuwe 10-weekse techniekcursus van start</h3>
+            <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#666;">Inclusief Nike trainingstenue, certificaat met persoonlijke foto en medaille. Wees er snel bij. Vol is vol.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contact" style="background:#0c2114;border-top:4px solid var(--accent);padding:clamp(52px,7vw,96px) clamp(18px,5vw,64px) 40px;">
+    <div style="max-width:1320px;margin:0 auto;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:44px;">
+        <div>
+          <img src="data:image/png;base64,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" alt="Voetbalschool KICK" style="height:32px;filter:brightness(0) invert(1);">
+          <p style="margin:18px 0 0;font-size:15px;line-height:1.6;color:rgba(255,255,255,.7);max-width:34ch;">Voetbalschool in de regio Den Haag. Kracht · Inzicht · Coordinatie · Kwaliteit.</p>
+          <p style="margin:18px 0 0;font-size:15px;color:rgba(255,255,255,.7);"><a href="mailto:info@voetbalschoolkick.nl" style="color:var(--accent);text-decoration:none;">info@voetbalschoolkick.nl</a></p>
+        </div>
+        <div>
+          <h4 style="margin:0;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55);">Navigatie</h4>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:18px;">
+            <a class="kick-link" href="#programmas" style="text-decoration:none;font-size:15px;color:rgba(255,255,255,.85);width:fit-content;">Programma's</a>
+            <a class="kick-link" href="#trainers" style="text-decoration:none;font-size:15px;color:rgba(255,255,255,.85);width:fit-content;">Trainers</a>
+            <a class="kick-link" href="#camps" style="text-decoration:none;font-size:15px;color:rgba(255,255,255,.85);width:fit-content;">Camps</a>
+            <a class="kick-link" href="#over" style="text-decoration:none;font-size:15px;color:rgba(255,255,255,.85);width:fit-content;">Over KICK</a>
+            <a class="kick-link" href="#locaties" style="text-decoration:none;font-size:15px;color:rgba(255,255,255,.85);width:fit-content;">Locaties</a>
+          </div>
+        </div>
+        <div>
+          <h4 style="margin:0;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55);">Volg ons</h4>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:18px;">
+            <a class="kick-link" href="https://www.instagram.com/voetbalschoolkick" target="_blank" rel="noopener" style="text-decoration:none;font-size:15px;color:rgba(255,255,255,.85);width:fit-content;">Instagram</a>
+            <a class="kick-link" href="https://www.facebook.com/voetbalschoolkick" target="_blank" rel="noopener" style="text-decoration:none;font-size:15px;color:rgba(255,255,255,.85);width:fit-content;">Facebook</a>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;">
+            <span style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);padding:6px 11px;border-radius:20px;">ADO Den Haag</span>
+            <span style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);padding:6px 11px;border-radius:20px;">Sparta</span>
+          </div>
+        </div>
+        <div>
+          <h4 style="margin:0;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55);">Nieuwsbrief</h4>
+          <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,.7);">Blijf op de hoogte van camps en open trainingen.</p>
+          <div style="display:flex;gap:8px;margin-top:16px;">
+            <input id="nl-email" type="email" placeholder="Je e-mailadres" style="flex:1;min-width:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:5px;padding:12px 14px;color:#fff;font-family:Manrope,sans-serif;font-size:14px;outline:none;">
+            <button id="nl-btn" style="background:var(--accent);color:#0A0A0A;border:none;border-radius:5px;padding:0 18px;font-family:Oswald,sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:13px;cursor:pointer;">Aanmelden</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-top:52px;padding-top:24px;border-top:1px solid rgba(255,255,255,.14);">
+        <span style="font-size:13px;color:rgba(255,255,255,.5);">&#xa9; 2026 Voetbalschool KICK · voetbalschoolkick.nl</span>
+        <div style="display:flex;gap:24px;">
+          <a class="kick-link" href="#" style="text-decoration:none;font-size:13px;color:rgba(255,255,255,.6);">Privacy</a>
+          <a class="kick-link" href="#" style="text-decoration:none;font-size:13px;color:rgba(255,255,255,.6);">Algemene voorwaarden</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function() {
+  // Mobile menu
+  var burger = document.getElementById('nav-burger-btn');
+  var menu = document.getElementById('mobile-menu');
+  var closeBtn = document.getElementById('close-menu-btn');
+  var closeLinks = document.querySelectorAll('.close-menu');
+
+  function openMenu() {
+    menu.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu() {
+    menu.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  if (burger) burger.addEventListener('click', openMenu);
+  if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+  closeLinks.forEach(function(l) { l.addEventListener('click', closeMenu); });
+
+  // Nav scroll
+  var nav = document.getElementById('kick-nav');
+  var logo = document.getElementById('kick-logo');
+
+  function onScroll() {
+    var scrolled = window.scrollY > 48;
+    if (scrolled) {
+      nav.style.background = '#ffffff';
+      nav.style.borderBottom = '1px solid #E5E5E5';
+      nav.style.paddingTop = '12px';
+      nav.style.paddingBottom = '12px';
+    } else {
+      nav.style.background = '';
+      nav.style.borderBottom = '';
+      nav.style.paddingTop = '';
+      nav.style.paddingBottom = '';
+    }
+    if (logo) logo.style.filter = scrolled ? '' : 'brightness(0) invert(1)';
+    document.querySelectorAll('.navtxt').forEach(function(e) {
+      e.style.color = scrolled ? '#111111' : '#ffffff';
+    });
+    document.querySelectorAll('.navline').forEach(function(e) {
+      e.style.background = scrolled ? '#111111' : '#ffffff';
+    });
+    // Burger border color on scroll
+    if (burger) {
+      burger.style.border = scrolled ? '1px solid rgba(0,0,0,.18)' : '1px solid rgba(255,255,255,.32)';
+      burger.style.background = scrolled ? 'rgba(0,0,0,.06)' : 'rgba(255,255,255,.14)';
+    }
+  }
+
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Scroll reveal
+  if ('IntersectionObserver' in window) {
+    var reveals = document.querySelectorAll('[data-reveal]');
+    reveals.forEach(function(el) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1)';
+      var d = el.getAttribute('data-reveal-delay');
+      if (d) el.style.transitionDelay = d + 'ms';
+    });
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'none';
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    reveals.forEach(function(el) { io.observe(el); });
+  }
+
+  // Stats counters
+  var counted = false;
+  var statsEl = document.getElementById('kick-stats');
+
+  function animateCounters() {
+    if (counted) return;
+    counted = true;
+    var targets = { spelers: 500, jaren: 7, kinderen: 100, talenten: 8 };
+    var dur = 1700;
+    var t0 = performance.now();
+    function tick(now) {
+      var p = Math.min(1, (now - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 3);
+      document.getElementById('stat-spelers').textContent = Math.round(targets.spelers * e);
+      document.getElementById('stat-jaren').textContent = Math.round(targets.jaren * e);
+      document.getElementById('stat-kinderen').textContent = Math.round(targets.kinderen * e);
+      document.getElementById('stat-talenten').textContent = Math.round(targets.talenten * e);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  if (statsEl && 'IntersectionObserver' in window) {
+    var so = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) { animateCounters(); so.unobserve(entry.target); }
+      });
+    }, { threshold: 0.3 });
+    so.observe(statsEl);
+  } else {
+    document.getElementById('stat-spelers').textContent = '500';
+    document.getElementById('stat-jaren').textContent = '7';
+    document.getElementById('stat-kinderen').textContent = '100';
+    document.getElementById('stat-talenten').textContent = '8';
+  }
+
+  // Newsletter
+  var nlBtn = document.getElementById('nl-btn');
+  var nlEmail = document.getElementById('nl-email');
+  if (nlBtn && nlEmail) {
+    nlBtn.addEventListener('click', function() {
+      if (nlEmail.value && nlEmail.value.includes('@')) {
+        nlBtn.textContent = 'Aangemeld!';
+        nlBtn.style.background = '#0B6E2C';
+        nlBtn.style.color = '#fff';
+        nlEmail.value = '';
+      } else {
+        nlEmail.style.borderColor = '#ff4444';
+        setTimeout(function() { nlEmail.style.borderColor = 'rgba(255,255,255,.22)'; }, 1500);
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
